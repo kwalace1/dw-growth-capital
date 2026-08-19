@@ -1,10 +1,19 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef, Suspense } from "react"
+import Link from "next/link"
+import { usePathname, useSearchParams } from "next/navigation"
+import { SERVICE_OFFERINGS, WEB_DEVELOPMENT_ID, getServicesNavLinks } from "@/data/services"
+import { ServiceDetailsPanel } from "@/components/ServiceDetailsPanel"
 
-const navItems = [
+type HomeNavItem =
+  | { label: string; slide: number }
+  | { label: string; href: string }
+
+const navItems: HomeNavItem[] = [
   { label: "Home", slide: 0 },
   { label: "Services", slide: 1 },
+  { label: "Get in touch", href: "/get-in-touch" },
   { label: "Our Firm", slide: 2 },
   { label: "Approach", slide: 3 },
   { label: "Our Partners", slide: 4 },
@@ -41,24 +50,92 @@ const portfolioCompanies = [
   }
 ]
 
-export default function Home() {
+function HomePageContent() {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [servicesMenuOpen, setServicesMenuOpen] = useState(false)
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [currentPortfolioIndex, setCurrentPortfolioIndex] = useState(0)
   const [isPortfolioPaused, setIsPortfolioPaused] = useState(false)
   const [expandedCompany, setExpandedCompany] = useState<number | null>(null)
   const [expandedService, setExpandedService] = useState<string | null>(null)
+  const servicesDropdownRef = useRef<HTMLDivElement>(null)
+  const sectionRefs = useRef<(HTMLElement | null)[]>([])
+  const serviceNavLinks = getServicesNavLinks()
 
-  const goToSlide = useCallback((index: number) => {
-    if (index < 0 || index >= totalSlides || index === currentSlide || isTransitioning) return
-
-    setIsTransitioning(true)
-    setCurrentSlide(index)
+  const scrollToSection = useCallback((index: number) => {
+    if (index < 0 || index >= totalSlides) return
     setMobileMenuOpen(false)
-    setTimeout(() => setIsTransitioning(false), 1000)
-  }, [currentSlide, isTransitioning])
+    setServicesMenuOpen(false)
+    setMobileServicesOpen(false)
+    const el = sectionRefs.current[index]
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }, [])
+
+  useEffect(() => {
+    const slide = searchParams.get("slide")
+    if (slide === null) return
+    const n = parseInt(slide, 10)
+    if (Number.isNaN(n) || n < 0 || n >= totalSlides) return
+    const id = requestAnimationFrame(() => {
+      sectionRefs.current[n]?.scrollIntoView({ behavior: "auto", block: "start" })
+      setCurrentSlide(n)
+    })
+    return () => cancelAnimationFrame(id)
+  }, [searchParams])
+
+  useEffect(() => {
+    const HEADER_OFFSET = 96
+
+    const updateFromScroll = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight
+      setScrollProgress(scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0)
+
+      const y = window.scrollY + HEADER_OFFSET
+      let active = 0
+      for (let i = 0; i < totalSlides; i++) {
+        const el = sectionRefs.current[i]
+        if (!el) continue
+        const top = el.offsetTop
+        if (top <= y + 1) active = i
+      }
+      setCurrentSlide(active)
+    }
+
+    updateFromScroll()
+    window.addEventListener("scroll", updateFromScroll, { passive: true })
+    window.addEventListener("resize", updateFromScroll, { passive: true })
+    return () => {
+      window.removeEventListener("scroll", updateFromScroll)
+      window.removeEventListener("resize", updateFromScroll)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!servicesMenuOpen) return
+    const onPointerDown = (e: MouseEvent) => {
+      if (servicesDropdownRef.current && !servicesDropdownRef.current.contains(e.target as Node)) {
+        setServicesMenuOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", onPointerDown)
+    return () => document.removeEventListener("mousedown", onPointerDown)
+  }, [servicesMenuOpen])
+
+  useEffect(() => {
+    if (!servicesMenuOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setServicesMenuOpen(false)
+    }
+    document.addEventListener("keydown", onKey)
+    return () => document.removeEventListener("keydown", onKey)
+  }, [servicesMenuOpen])
 
   // Mouse tracking for subtle parallax effects
   useEffect(() => {
@@ -74,90 +151,13 @@ export default function Home() {
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [])
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isTransitioning) return
-      if (e.key === "ArrowDown" || e.key === "ArrowRight" || e.key === "PageDown") {
-        e.preventDefault()
-        goToSlide(currentSlide + 1)
-      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft" || e.key === "PageUp") {
-        e.preventDefault()
-        goToSlide(currentSlide - 1)
-      } else if (e.key === "Home") {
-        e.preventDefault()
-        goToSlide(0)
-      } else if (e.key === "End") {
-        e.preventDefault()
-        goToSlide(totalSlides - 1)
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [currentSlide, isTransitioning, goToSlide])
-
-  // Wheel navigation with improved debouncing
-  useEffect(() => {
-    let timeout: NodeJS.Timeout
-    let lastWheelTime = 0
-    const handleWheel = (e: WheelEvent) => {
-      if (isTransitioning) return
-      
-      // Disable wheel navigation on scrollable slides (services slide 1, approach slide 3) to allow normal scrolling
-      if (currentSlide === 1 || currentSlide === 3) {
-        // Check if we're at the top or bottom of the scrollable area
-        const target = e.target as HTMLElement
-        const scrollableContainer = target.closest('.overflow-y-auto')
-        if (scrollableContainer) {
-          const container = scrollableContainer as HTMLElement
-          const isAtTop = container.scrollTop === 0
-          const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 10
-          
-          // Only allow slide navigation if at the very top scrolling up, or at the very bottom scrolling down
-          if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
-            // Allow slide navigation
-          } else {
-            // Prevent slide navigation, allow normal scrolling
-            return
-          }
-        } else {
-          // If not in a scrollable container, allow normal scrolling
-          return
-        }
-      }
-      
-      const now = Date.now()
-      if (now - lastWheelTime < 1000) return
-      
-      clearTimeout(timeout)
-      timeout = setTimeout(() => {
-        if (Math.abs(e.deltaY) > 30) {
-          lastWheelTime = Date.now()
-          if (e.deltaY > 0) goToSlide(currentSlide + 1)
-          else goToSlide(currentSlide - 1)
-        }
-      }, 150)
-    }
-    window.addEventListener("wheel", handleWheel, { passive: true })
-    return () => {
-      window.removeEventListener("wheel", handleWheel)
-      clearTimeout(timeout)
-    }
-  }, [currentSlide, isTransitioning, goToSlide])
-
-  const getSlideClass = (index: number) => {
-    if (index === currentSlide) return "translate-x-0 opacity-100"
-    if (index < currentSlide) return "-translate-x-full opacity-0"
-    return "translate-x-full opacity-0"
-  }
-
   return (
-    <div className="relative h-screen overflow-hidden bg-[#0a0a0a] text-white">
+    <div className="relative min-h-screen overflow-x-hidden bg-[#0a0a0a] text-white">
       {/* Sophisticated Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-16 py-6 bg-[#0a0a0a]/95 backdrop-blur-2xl border-b border-white/5">
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between page-gutter-x py-6 bg-[#0a0a0a]/95 backdrop-blur-2xl border-b border-white/5">
         <div 
           className="flex items-center gap-2 cursor-pointer group transition-opacity duration-300"
-          onClick={() => goToSlide(0)}
+          onClick={() => scrollToSection(0)}
         >
           {/* Logo: DW in gold, GROWTH & CAPITAL in white (matching brand kit horizontal logo style, adapted for dark background) */}
           <span className="text-2xl md:text-3xl font-serif text-[#C4A574] font-normal leading-none">DW</span>
@@ -168,22 +168,103 @@ export default function Home() {
         
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-8">
-          {navItems.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => goToSlide(item.slide)}
-              className={`text-xs font-light tracking-[0.15em] uppercase transition-all duration-300 relative group ${
-                currentSlide === item.slide 
-                  ? "text-[#C4A574]" 
-                  : "text-white/60 hover:text-white"
-              }`}
-            >
-              {item.label}
-              <span className={`absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 ${
-                currentSlide === item.slide ? "w-full" : "w-0 group-hover:w-full"
-              }`} />
-            </button>
-          ))}
+          {navItems.map((item) => {
+            if (item.label === "Services") {
+              return (
+                <div key="Services" className="relative" ref={servicesDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setServicesMenuOpen((o) => !o)}
+                    className={`text-xs font-light tracking-[0.15em] uppercase transition-all duration-300 relative group ${
+                      currentSlide === 1 ? "text-[#C4A574]" : "text-white/60 hover:text-white"
+                    }`}
+                    aria-expanded={servicesMenuOpen}
+                    aria-haspopup="menu"
+                  >
+                    Services
+                    <svg
+                      className={`inline-block ml-1 w-3 h-3 transition-transform ${servicesMenuOpen ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                    <span
+                      className={`absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 ${
+                        currentSlide === 1 ? "w-full" : "w-0 group-hover:w-full"
+                      }`}
+                    />
+                  </button>
+                  {servicesMenuOpen && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-[60]" role="menu">
+                      <div className="min-w-[18rem] py-2 bg-[#121212] border border-white/10 shadow-2xl rounded-sm">
+                        {serviceNavLinks.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            role="menuitem"
+                            className={`block px-4 py-2.5 text-left text-xs font-light tracking-wide transition-colors ${
+                              link.href.endsWith(WEB_DEVELOPMENT_ID)
+                                ? "bg-[#C4A574]/10 text-[#E8D4B0] border-l-2 border-[#C4A574] hover:bg-[#C4A574]/20"
+                                : "text-white/80 hover:text-[#C4A574] hover:bg-white/5"
+                            }`}
+                            onClick={() => setServicesMenuOpen(false)}
+                          >
+                            {link.href.endsWith(WEB_DEVELOPMENT_ID) && (
+                              <span className="mr-2 inline-block h-1 w-1 rounded-full bg-[#C4A574] align-middle shadow-[0_0_8px_#C4A574]" />
+                            )}
+                            {link.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            }
+            if ("href" in item) {
+              const active = pathname === item.href
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`text-xs font-light tracking-[0.15em] uppercase transition-all duration-300 relative group ${
+                    active ? "text-[#C4A574]" : "text-white/60 hover:text-white"
+                  }`}
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setServicesMenuOpen(false)
+                    setMobileServicesOpen(false)
+                  }}
+                >
+                  {item.label}
+                  <span
+                    className={`absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 ${
+                      active ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                  />
+                </Link>
+              )
+            }
+            return (
+              <button
+                key={item.label}
+                onClick={() => scrollToSection(item.slide)}
+                className={`text-xs font-light tracking-[0.15em] uppercase transition-all duration-300 relative group ${
+                  currentSlide === item.slide ? "text-[#C4A574]" : "text-white/60 hover:text-white"
+                }`}
+              >
+                {item.label}
+                <span
+                  className={`absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 ${
+                    currentSlide === item.slide ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                />
+              </button>
+            )
+          })}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -205,37 +286,104 @@ export default function Home() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden bg-[#0a0a0a]/98 backdrop-blur-2xl pt-24">
-          <nav className="flex flex-col gap-2 px-8">
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => goToSlide(item.slide)}
-                className={`text-left py-4 px-0 text-lg font-light tracking-wide transition-all border-b border-white/5 ${
-                  currentSlide === item.slide
-                    ? "text-[#C4A574] border-[#C4A574]/30"
-                    : "text-white/60 hover:text-white hover:border-white/10"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+          <nav className="flex flex-col gap-1 page-gutter-x overflow-y-auto max-h-[calc(100vh-6rem)] pb-12">
+            {navItems.map((item) => {
+              if (item.label === "Services") {
+                return (
+                  <div key="Services" className="border-b border-white/5">
+                    <button
+                      type="button"
+                      onClick={() => setMobileServicesOpen((o) => !o)}
+                      className={`flex items-center justify-between w-full text-left py-4 px-0 text-lg font-light tracking-wide transition-all ${
+                        mobileServicesOpen || currentSlide === 1 ? "text-[#C4A574]" : "text-white/60"
+                      }`}
+                      aria-expanded={mobileServicesOpen}
+                    >
+                      Services
+                      <svg
+                        className={`w-5 h-5 transition-transform ${mobileServicesOpen ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {mobileServicesOpen && (
+                      <div className="pl-3 pb-4 space-y-2 border-l border-[#C4A574]/20 ml-1">
+                        {serviceNavLinks.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className={`block py-2 text-sm font-light rounded-sm pl-2 -ml-2 ${
+                              link.href.endsWith(WEB_DEVELOPMENT_ID)
+                                ? "text-[#E8D4B0] bg-[#C4A574]/10 border-l-2 border-[#C4A574]"
+                                : "text-white/70 hover:text-[#C4A574]"
+                            }`}
+                            onClick={() => {
+                              setMobileMenuOpen(false)
+                              setMobileServicesOpen(false)
+                            }}
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+              if ("href" in item) {
+                const active = pathname === item.href
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className={`text-left py-4 px-0 text-lg font-light tracking-wide transition-all border-b border-white/5 block ${
+                      active
+                        ? "text-[#C4A574] border-[#C4A574]/30"
+                        : "text-white/60 hover:text-white hover:border-white/10"
+                    }`}
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setMobileServicesOpen(false)
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                )
+              }
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => scrollToSection(item.slide)}
+                  className={`text-left py-4 px-0 text-lg font-light tracking-wide transition-all border-b border-white/5 ${
+                    currentSlide === item.slide
+                      ? "text-[#C4A574] border-[#C4A574]/30"
+                      : "text-white/60 hover:text-white hover:border-white/10"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              )
+            })}
           </nav>
         </div>
       )}
 
       {/* Slide Navigation Dots - More Refined */}
-      <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-40 hidden lg:block">
+      <nav className="fixed right-5 md:right-8 lg:right-12 top-1/2 -translate-y-1/2 z-40 hidden lg:block">
         <div className="space-y-4">
           {Array.from({ length: totalSlides }).map((_, index) => (
             <button
               key={index}
-              onClick={() => goToSlide(index)}
+              onClick={() => scrollToSection(index)}
               className={`block transition-all duration-500 ${
                 currentSlide === index
                   ? "w-2 h-8 bg-[#C4A574]"
                   : "w-1 h-1 bg-white/20 hover:bg-white/40"
               } rounded-full`}
-              aria-label={`Go to slide ${index + 1}`}
+              aria-label={`Go to section ${index + 1}`}
             />
           ))}
         </div>
@@ -244,73 +392,71 @@ export default function Home() {
       {/* Progress Indicator - Subtle */}
       <div className="fixed bottom-0 left-0 right-0 h-px bg-white/5 z-50">
         <div 
-          className="h-full bg-[#C4A574] transition-all duration-1000 ease-out"
-          style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }}
+          className="h-full bg-[#C4A574] transition-[width] duration-150 ease-out"
+          style={{ width: `${scrollProgress}%` }}
         />
       </div>
 
-      {/* Slides Container */}
-      <div className="relative h-screen w-screen overflow-hidden">
-        {/* Slide 0: Home - Hero */}
+      <main className="relative w-full">
+        {/* Section 0: Home - Hero */}
         <section
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${getSlideClass(0)}`}
-          style={{ zIndex: currentSlide === 0 ? 10 : 1 }}
+          ref={(el) => { sectionRefs.current[0] = el }}
+          id="section-0"
+          className="relative min-h-[100dvh] min-h-screen scroll-mt-[5.5rem] flex flex-col"
         >
-          {/* Background Image - NYC Skyline */}
-          {/* To use your own image, place it in the public folder and change the URL to: url('/your-image-name.jpg') */}
+          {/* Background — swap URL for a file in /public if you prefer */}
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2400&q=88')`,
             }}
           >
-            {/* Dark Overlay for Text Readability - More transparent to show skyline */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/50 via-[#0a0a0a]/40 to-[#0a0a0a]/55" />
-            {/* Additional subtle overlay for better contrast */}
-            <div className="absolute inset-0 bg-[#0a0a0a]/20" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/55 via-[#0a0a0a]/45 to-[#0a0a0a]/75" />
+            <div className="absolute inset-0 bg-[#0a0a0a]/25" />
           </div>
           
-          <div className="relative h-screen flex items-center justify-center pt-24 px-8 md:px-16 z-10">
-            <div className="text-center max-w-6xl mx-auto">
-              <div className="mb-12 space-y-6">
-                <h1 className="text-6xl md:text-8xl lg:text-9xl font-extralight mb-8 leading-[0.95] tracking-tight">
-                  Backing Builders.
-                  <br />
-                  <span className="text-[#C4A574] font-light">Scaling Operators.</span>
-                </h1>
-              </div>
-              <p className="text-lg md:text-xl text-white/70 mb-4 max-w-2xl mx-auto leading-relaxed font-light">
-                DW Growth & Capital is a sweat equity firm that partners with founders and operators
-                to compound cash flow, professionalize operations, and scale companies sustainably.
-              </p>
-              <p className="text-base md:text-lg text-white/50 mb-12 max-w-xl mx-auto font-light">
-                We provide marketing, branding, and consulting services to help businesses grow.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="relative z-10 flex flex-1 flex-col justify-center w-full max-w-4xl mx-auto page-gutter-x py-24 sm:py-28 md:py-32 text-center">
+            <h1 className="text-[1.65rem] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extralight mb-6 sm:mb-8 md:mb-10 leading-[1.12] sm:leading-[1.1] tracking-tight">
+              Backing Builders.
+              <br />
+              <span className="text-[#C4A574] font-light">Creating Operators.</span>
+              <br />
+              Scaling Companies.
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl text-white/72 mb-4 sm:mb-5 max-w-2xl mx-auto leading-relaxed font-light">
+              DW Growth & Capital is a sweat equity firm that partners with founders and operators to build
+              enduring, cash-flowing businesses. We professionalize operations, unlock growth, and scale companies with
+              discipline and precision.
+            </p>
+            <p className="text-sm sm:text-base md:text-lg text-white/58 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed font-light">
+              Through embedded execution across marketing, branding, and strategy, we act as true operators—not
+              outside consultants—focused on one thing: creating lasting enterprise value.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center w-full sm:w-auto mx-auto">
                 <button
-                  onClick={() => goToSlide(1)}
+                  onClick={() => scrollToSection(1)}
                   className="group relative px-10 py-4 bg-[#C4A574] hover:bg-[#B39564] text-[#0a0a0a] font-light text-sm uppercase tracking-[0.2em] transition-all duration-300 overflow-hidden"
                 >
                   <span className="relative z-10">Our Services</span>
                   <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                 </button>
                 <button
-                  onClick={() => goToSlide(6)}
+                  onClick={() => scrollToSection(6)}
                   className="px-10 py-4 bg-transparent hover:bg-white/5 text-white border border-white/20 hover:border-white/40 font-light text-sm uppercase tracking-[0.2em] transition-all duration-300"
                 >
                   Get In Touch
                 </button>
               </div>
-            </div>
           </div>
         </section>
 
-        {/* Slide 1: Services */}
+        {/* Section 1: Services */}
         <section
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${getSlideClass(1)}`}
-          style={{ zIndex: currentSlide === 1 ? 10 : 1 }}
+          ref={(el) => { sectionRefs.current[1] = el }}
+          id="section-1"
+          className="relative min-h-screen scroll-mt-[5.5rem] bg-[#0a0a0a]"
         >
-          <div className="h-screen flex flex-col bg-[#0a0a0a] pt-24 px-6 md:px-12 overflow-y-auto">
+          <div className="flex flex-col pt-24 page-gutter-x pb-24 md:pb-28">
             <div className="max-w-7xl w-full mx-auto py-8 md:py-12">
               <div className="mb-8 md:mb-12 text-center">
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-extralight mb-4 tracking-tight">Our Services</h2>
@@ -319,344 +465,78 @@ export default function Home() {
                 </p>
               </div>
               <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-                {[
-                  {
-                    id: "consulting",
-                    title: "Consulting",
-                    shortDescription: "Expert business consulting to optimize operations, improve processes, and accelerate growth.",
-                    icon: "→",
-                    details: {
-                      mainTitle: "Business Strategy & Operations Consulting",
-                      subtitle: "High-impact advisory designed to help small and mid-sized businesses make smarter decisions, operate more efficiently, and scale without chaos.",
-                      services: [
-                        {
-                          name: "90-Day Growth Blueprint",
-                          description: "A focused diagnostic and planning engagement that identifies what's holding the business back and lays out a clear, actionable roadmap for the next 90 days.",
-                          includes: [
-                            "Business model audit",
-                            "Pricing and margin analysis",
-                            "KPI framework",
-                            "90-day strategic roadmap",
-                            "Clear next-step recommendations"
-                          ],
-                          bestFor: "Owners who need direction, clarity, and quick wins without a long-term consulting commitment."
-                        },
-                        {
-                          name: "Full Operations Optimization",
-                          description: "A hands-on consulting engagement designed to improve internal efficiency, reduce waste, and align people, processes, and capacity with business goals.",
-                          includes: [
-                            "Workflow mapping and bottleneck identification",
-                            "Team structure and role optimization",
-                            "Capacity planning and role alignment",
-                            "KPI implementation and tracking"
-                          ],
-                          bestFor: "Growing SMBs experiencing operational strain, inefficiencies, or leadership overload."
-                        },
-                        {
-                          name: "AI & Automations Consulting",
-                          description: "Implementation-focused consulting to eliminate manual work, reduce errors, and improve visibility through smart automation.",
-                          includes: [
-                            "Intake and lead routing automations",
-                            "Internal dashboards and reporting systems",
-                            "Automation documentation and handoff"
-                          ],
-                          bestFor: "Businesses ready to save time, improve follow-up, and modernize internal systems."
-                        },
-                        {
-                          name: "Monthly Strategy Retainer",
-                          description: "Ongoing strategic support for leadership teams that want consistent guidance, accountability, and performance monitoring.",
-                          includes: [
-                            "Two strategy calls per month",
-                            "KPI review and performance analysis",
-                            "Monthly strategic reporting"
-                          ],
-                          bestFor: "Owners who want a strategic partner without hiring a full-time executive."
-                        }
-                      ],
-                      addOns: [
-                        "Field Tech Efficiency Review: Analyze technician workflows, scheduling, and productivity",
-                        "Local Competitor Benchmarking: Market positioning and competitor performance analysis",
-                        "Customer Journey Mapping: Identify friction points from first touch to repeat business",
-                        "Workforce Optimization: Staffing, utilization, and role efficiency analysis"
-                      ]
-                    }
-                  },
-                  {
-                    id: "branding",
-                    title: "Branding",
-                    shortDescription: "Build a compelling brand identity that resonates. From visual design to brand strategy.",
-                    icon: "→",
-                    details: {
-                      mainTitle: "Branding & Identity",
-                      subtitle: "Branding services focused on building credibility, consistency, and differentiation—whether launching a new business or refining an existing one.",
-                      services: [
-                        {
-                          name: "Brand Identity Package",
-                          description: "A clean, professional brand foundation designed for newer or smaller businesses.",
-                          includes: [
-                            "Brand discovery questionnaire",
-                            "Primary logo",
-                            "Color palette",
-                            "Font selection",
-                            "Basic brand usage guidelines"
-                          ],
-                          bestFor: "Startups and small businesses that need a professional look without overinvestment."
-                        },
-                        {
-                          name: "Full Brand Suite",
-                          description: "A more robust visual identity for growing businesses that need a cohesive and polished presence across platforms.",
-                          includes: [
-                            "Brand discovery interview",
-                            "Primary and secondary logo options",
-                            "Expanded visual identity (colors, fonts, icons)",
-                            "Business card designs",
-                            "Social media templates"
-                          ],
-                          bestFor: "SMBs preparing to scale marketing, hiring, or sales efforts."
-                        },
-                        {
-                          name: "Premium Strategic Branding Package",
-                          description: "A strategy-first branding engagement that aligns positioning, messaging, and visual identity with long-term business goals.",
-                          includes: [
-                            "In-depth brand strategy workshop",
-                            "Expanded and detailed brand guidelines"
-                          ],
-                          bestFor: "Established businesses or companies entering new markets that need strategic clarity and brand authority."
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    id: "marketing",
-                    title: "Marketing",
-                    shortDescription: "Strategic marketing campaigns that drive growth. We help you reach the right audience and optimize conversions.",
-                    icon: "→",
-                    details: {
-                      mainTitle: "Digital Marketing Retainers",
-                      subtitle: "Ongoing marketing partnerships designed to drive consistent growth, lead generation, and brand visibility.",
-                      services: [
-                        {
-                          name: "Starter (Tier 1)",
-                          description: "Entry-level digital marketing support for local and smaller businesses.",
-                          includes: [
-                            "Monthly strategy and reporting",
-                            "Basic SEO",
-                            "Weekly social media posting",
-                            "Basic email marketing"
-                          ],
-                          bestFor: "Local businesses establishing an online presence and steady lead flow."
-                        },
-                        {
-                          name: "Growth (Tier 2)",
-                          description: "A performance-focused marketing retainer designed to scale traffic and conversions.",
-                          includes: [
-                            "Advanced SEO strategy",
-                            "Landing page optimization",
-                            "PPC ad management (Google, Meta, etc.)",
-                            "Email automations and funnels"
-                          ],
-                          bestFor: "SMBs actively investing in growth and demand generation."
-                        },
-                        {
-                          name: "Acceleration (Tier 3)",
-                          description: "Higher-intensity marketing execution with added strategy and competitive insight.",
-                          includes: [
-                            "Expanded ad management",
-                            "Quarterly growth planning meetings",
-                            "Basic competitor analysis"
-                          ],
-                          bestFor: "Businesses seeking faster growth without jumping to enterprise-level spend."
-                        },
-                        {
-                          name: "Market Dominance (Tier 4)",
-                          description: "A comprehensive digital marketing and growth partnership.",
-                          includes: [
-                            "Weekly reporting",
-                            "Full digital marketing team",
-                            "Monthly consulting, strategy, and growth meetings",
-                            "Multiple simultaneous campaigns"
-                          ],
-                          bestFor: "Larger or aggressive-growth companies looking to dominate their market."
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    id: "web-development",
-                    title: "Web Development & Digital Buildout",
-                    shortDescription: "High-conversion, industry-aware websites designed to generate leads, support operations, and scale with the business.",
-                    icon: "→",
-                    details: {
-                      mainTitle: "Web Development & Digital Buildout",
-                      subtitle: "High-conversion, industry-aware websites designed to generate leads, support operations, and scale with the business. These builds prioritize performance, clarity, and ROI—not vanity design.",
-                      services: [
-                        {
-                          name: "Basic Business Site",
-                          description: "A professional, conversion-ready website designed to establish credibility and a clean online presence.",
-                          includes: [
-                            "4–6 core pages",
-                            "Mobile-optimized design",
-                            "SEO fundamentals",
-                            "Brand-aligned styling"
-                          ],
-                          bestFor: "Small businesses or startups that need a strong digital foundation without complexity."
-                        },
-                        {
-                          name: "Standard Website",
-                          description: "A more robust website built to support lead generation, customer interaction, and service workflows.",
-                          includes: [
-                            "7–12 pages",
-                            "Booking forms or lead capture flows",
-                            "Enhanced brand integration",
-                            "Conversion-focused layouts"
-                          ],
-                          bestFor: "Service businesses actively generating leads and bookings online."
-                        },
-                        {
-                          name: "Premium Website",
-                          description: "A custom, high-performance website designed for scale, differentiation, and advanced functionality.",
-                          includes: [
-                            "12+ pages",
-                            "Custom animations and interactions",
-                            "Advanced components and integrations",
-                            "Fully bespoke layout and structure"
-                          ],
-                          bestFor: "Established or growth-focused companies that view their website as a core revenue asset."
-                        },
-                        {
-                          name: "HVAC / Plumbing / Electrical",
-                          description: "Websites designed to drive urgent calls, booked jobs, and financing conversions.",
-                          includes: [
-                            "Clear service menus",
-                            "Financing and promotions pages",
-                            "Emergency call-to-action buttons"
-                          ],
-                          bestFor: "Trade businesses competing in high-intent, local markets."
-                        },
-                        {
-                          name: "Junk Removal",
-                          description: "Conversion-focused websites built around speed, clarity, and dispatch efficiency.",
-                          includes: [
-                            "Instant quote or estimator tools",
-                            "Job request and dispatch workflows",
-                            "Simple, mobile-first UX"
-                          ],
-                          bestFor: "Junk removal companies prioritizing rapid lead capture and operational efficiency."
-                        },
-                        {
-                          name: "Pet Care",
-                          description: "Customer-friendly websites designed to streamline bookings and recurring services.",
-                          includes: [
-                            "Online booking portals",
-                            "Client memberships or subscription setups",
-                            "Service scheduling integrations"
-                          ],
-                          bestFor: "Pet care businesses offering repeat services or membership-based models."
-                        },
-                        {
-                          name: "Real Estate Teams",
-                          description: "High-end websites built to support listings, agents, and CRM-driven sales pipelines.",
-                          includes: [
-                            "IDX integration",
-                            "Agent profile pages",
-                            "CRM and lead routing workflows"
-                          ],
-                          bestFor: "Real estate teams and brokerages scaling lead flow and agent productivity."
-                        }
-                      ],
-                      addOns: [
-                        "Website Packages (East Coast Pricing)",
-                        "Industry-Focused Websites"
-                      ]
-                    }
-                  }
-                ].map((service, idx) => (
+                {SERVICE_OFFERINGS.map((service, idx) => {
+                  const isWebDev = service.id === WEB_DEVELOPMENT_ID
+                  return (
                   <div
                     key={service.id}
-                    className={`relative bg-white/5 border border-white/10 transition-all duration-500 cursor-pointer ${
-                      expandedService === service.id 
-                        ? 'md:col-span-3 bg-white/10 border-white/20' 
-                        : 'hover:bg-white/10 hover:border-white/20'
+                    className={`relative transition-all duration-500 cursor-pointer ${
+                      isWebDev
+                        ? expandedService === service.id
+                          ? "md:col-span-3 bg-gradient-to-br from-[#C4A574]/15 via-white/[0.07] to-transparent border border-[#C4A574]/40 shadow-[0_0_40px_rgba(196,165,116,0.12)] animate-gold-spotlight"
+                          : "md:col-span-3 border border-[#C4A574]/30 bg-gradient-to-br from-[#C4A574]/[0.08] to-transparent hover:border-[#C4A574]/45 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] animate-gold-spotlight"
+                        : expandedService === service.id
+                          ? "bg-white/10 border-white/20 md:col-span-3 border"
+                          : "bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20"
                     }`}
                     style={{ transitionDelay: `${idx * 100}ms` }}
                   >
+                    {isWebDev && (
+                      <div
+                        className="pointer-events-none absolute right-0 top-0 px-3 py-1 text-[9px] font-light uppercase tracking-[0.2em] text-[#0a0a0a] bg-[#C4A574]"
+                        aria-hidden
+                      >
+                        Featured build
+                      </div>
+                    )}
                     <button
                       onClick={() => setExpandedService(expandedService === service.id ? null : service.id)}
                       className="w-full text-left p-6 md:p-8"
                     >
                       <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="text-2xl md:text-3xl text-[#C4A574] font-light">{service.icon}</div>
-                          <h3 className="text-xl md:text-2xl font-light text-white tracking-tight">{service.title}</h3>
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <div className={`text-[#C4A574] font-light ${isWebDev ? "text-3xl md:text-4xl drop-shadow-[0_0_10px_rgba(196,165,116,0.45)]" : "text-2xl md:text-3xl"}`}>{service.icon}</div>
+                          <h3 className={`font-light text-white tracking-tight ${isWebDev ? "text-xl md:text-2xl" : "text-xl md:text-2xl"}`}>{service.title}</h3>
                         </div>
                         <div className="text-[#C4A574] text-lg md:text-xl flex-shrink-0 ml-4">
                           {expandedService === service.id ? '−' : '+'}
                         </div>
                       </div>
-                      <p className="text-white/60 leading-relaxed font-light text-sm">
+                      <p className={`leading-relaxed font-light text-sm ${isWebDev ? "text-white/75" : "text-white/60"}`}>
                         {service.shortDescription}
                       </p>
                     </button>
 
                     {/* Expanded Content */}
-                    {expandedService === service.id && service.details && (
-                      <div className="px-6 md:px-8 pb-6 md:pb-8 border-t border-white/10 pt-4 md:pt-6 space-y-6">
-                        <div>
-                          <h4 className="text-lg md:text-xl font-light text-white mb-2 tracking-tight">{service.details.mainTitle}</h4>
-                          <p className="text-white/70 font-light text-sm leading-relaxed">{service.details.subtitle}</p>
-                        </div>
-
-                        <div className="space-y-5">
-                          {service.details.services.map((item, itemIdx) => (
-                            <div key={itemIdx} className="border-l-2 border-[#C4A574]/30 pl-4 md:pl-5">
-                              <h5 className="text-base md:text-lg font-light text-[#C4A574] mb-2">{item.name}</h5>
-                              <p className="text-white/70 font-light text-xs md:text-sm mb-3 leading-relaxed">{item.description}</p>
-                              <div className="mb-2">
-                                <p className="text-white/60 text-xs uppercase tracking-wide mb-1.5">Includes:</p>
-                                <ul className="space-y-1">
-                                  {item.includes.map((include, includeIdx) => (
-                                    <li key={includeIdx} className="text-white/70 text-xs md:text-sm font-light flex items-start">
-                                      <span className="text-[#C4A574] mr-2 flex-shrink-0">•</span>
-                                      <span>{include}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                              <p className="text-white/50 text-xs italic mt-2">
-                                <span className="font-medium">Best for:</span> {item.bestFor}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-
-                        {service.details.addOns && (
-                          <div className="pt-4 border-t border-white/10">
-                            <h5 className="text-base md:text-lg font-light text-[#C4A574] mb-3">Industry-Specific Add-Ons</h5>
-                            <ul className="space-y-1.5">
-                              {service.details.addOns.map((addOn, addOnIdx) => (
-                                <li key={addOnIdx} className="text-white/70 text-xs md:text-sm font-light flex items-start">
-                                  <span className="text-[#C4A574] mr-2 flex-shrink-0">•</span>
-                                  <span>{addOn}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {expandedService === service.id && service.details && <ServiceDetailsPanel service={service} />}
                   </div>
-                ))}
+                  )
+                })}
+              </div>
+
+              <div className="mt-12 md:mt-16 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 rounded-sm border border-white/10 bg-white/[0.03] px-6 py-8 md:px-10 md:py-10 text-center sm:text-left">
+                <p className="text-sm md:text-base text-white/60 font-light max-w-xl leading-relaxed">
+                  Need something tailored to your stage, industry, or capital structure? We design custom partnerships
+                  when standard packages are not the right fit.
+                </p>
+                <Link
+                  href="/get-in-touch"
+                  className="shrink-0 px-8 py-3.5 bg-[#C4A574] hover:bg-[#B39564] text-[#0a0a0a] font-light text-xs uppercase tracking-[0.2em] transition-all duration-300"
+                >
+                  Get in touch
+                </Link>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Slide 2: Our Firm */}
+        {/* Section 2: Our Firm */}
         <section
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${getSlideClass(2)}`}
-          style={{ zIndex: currentSlide === 2 ? 10 : 1 }}
+          ref={(el) => { sectionRefs.current[2] = el }}
+          id="section-2"
+          className="relative min-h-screen scroll-mt-[5.5rem] bg-[#0f0f0f]"
         >
-          <div className="h-screen flex flex-col bg-[#0f0f0f] pt-24 px-6 md:px-12 overflow-y-auto">
+          <div className="flex flex-col pt-24 page-gutter-x pb-24 md:pb-28">
             <div className="max-w-6xl w-full mx-auto py-12 md:py-16">
               <h2 className="text-5xl md:text-6xl font-extralight mb-12 md:mb-16 tracking-tight text-center">Our Firm</h2>
               
@@ -706,12 +586,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Slide 3: Approach */}
+        {/* Section 3: Approach */}
         <section
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${getSlideClass(3)}`}
-          style={{ zIndex: currentSlide === 3 ? 10 : 1 }}
+          ref={(el) => { sectionRefs.current[3] = el }}
+          id="section-3"
+          className="relative min-h-screen scroll-mt-[5.5rem] bg-[#0a0a0a]"
         >
-          <div className="h-screen flex flex-col bg-[#0a0a0a] pt-24 px-6 md:px-12 overflow-y-auto">
+          <div className="flex flex-col pt-24 page-gutter-x pb-24 md:pb-28">
             <div className="max-w-6xl w-full mx-auto py-12 md:py-16">
               <div className="mb-12 md:mb-16 text-center">
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-extralight mb-4 md:mb-6 tracking-tight">How We Drive Growth</h2>
@@ -808,7 +689,7 @@ export default function Home() {
               {/* CTA */}
               <div className="mt-12 md:mt-16 text-center">
                 <button
-                  onClick={() => goToSlide(1)}
+                  onClick={() => scrollToSection(1)}
                   className="inline-flex items-center gap-2 text-[#C4A574] hover:text-[#D4B584] text-sm md:text-base uppercase tracking-[0.15em] font-light transition-colors"
                 >
                   See how this works for your business
@@ -819,12 +700,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Slide 4: Our Partners */}
+        {/* Section 4: Our Partners */}
         <section
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${getSlideClass(4)}`}
-          style={{ zIndex: currentSlide === 4 ? 10 : 1 }}
+          ref={(el) => { sectionRefs.current[4] = el }}
+          id="section-4"
+          className="relative min-h-screen scroll-mt-[5.5rem] bg-[#0f0f0f]"
         >
-          <div className="h-screen flex flex-col bg-[#0f0f0f] pt-24 px-6 md:px-12 overflow-y-auto">
+          <div className="flex flex-col pt-24 page-gutter-x pb-24 md:pb-28 min-h-[80vh]">
             <div className="max-w-6xl w-full mx-auto flex flex-col flex-1">
               {/* Header Section */}
               <div className="mb-8 md:mb-12 text-center flex-shrink-0">
@@ -982,36 +864,41 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Slide 5: How We Help */}
+        {/* Section 5: How We Help */}
         <section
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${getSlideClass(5)}`}
-          style={{ zIndex: currentSlide === 5 ? 10 : 1 }}
+          ref={(el) => { sectionRefs.current[5] = el }}
+          id="section-5"
+          className="relative min-h-screen scroll-mt-[5.5rem] bg-[#0a0a0a] flex items-center"
         >
-          <div className="h-screen flex items-center justify-center bg-[#0a0a0a] pt-24 px-6 md:px-12">
+          <div className="w-full flex items-center justify-center py-20 md:py-24 page-gutter-x">
             <div className="max-w-5xl mx-auto">
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extralight mb-8 md:mb-12 tracking-tight text-center">
-                How We Help You Grow
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extralight mb-8 md:mb-10 tracking-tight text-center leading-[1.1]">
+                Built to Scale.
+                <br />
+                <span className="text-[#C4A574] font-light">Designed to Endure.</span>
               </h2>
               <div className="space-y-6 md:space-y-8 text-base md:text-lg text-white/70 leading-relaxed font-light">
                 <p className="text-center text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
-                  We help small businesses grow faster and smarter through clear strategy, strong branding, and execution that actually gets done.
+                  We partner with founders and operators to drive real growth—strengthening operations, accelerating
+                  revenue, and building systems that last.
                 </p>
-                <p className="text-center max-w-3xl mx-auto">
-                  From marketing and brand positioning to operational consulting and custom web development, we partner closely with business owners to solve real problems—more leads, clearer messaging, better systems, and sustainable growth.
+                <p className="text-center max-w-3xl mx-auto text-white/75">
+                  From marketing and branding to hands-on strategic execution, we embed ourselves in your business to
+                  create measurable, long-term value.
                 </p>
-                <p className="text-center text-white/60 max-w-2xl mx-auto italic">
-                  No fluff. No theory decks. Just practical expertise and hands-on support designed to move your business forward.
+                <p className="text-center text-sm md:text-base text-white/45 max-w-2xl mx-auto tracking-wide">
+                  New York-based. Partnering with operators nationwide.
                 </p>
                 <div className="mt-10 md:mt-12 text-center space-y-4">
                   <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <button
-                      onClick={() => goToSlide(6)}
+                      onClick={() => scrollToSection(6)}
                       className="px-8 md:px-10 py-3 md:py-4 bg-[#C4A574] hover:bg-[#B39564] text-[#0a0a0a] font-light text-sm uppercase tracking-[0.2em] transition-all duration-300"
                     >
                       Work With Us
                     </button>
                     <button
-                      onClick={() => goToSlide(1)}
+                      onClick={() => scrollToSection(1)}
                       className="px-8 md:px-10 py-3 md:py-4 bg-transparent hover:bg-white/5 text-white border border-white/20 hover:border-white/40 font-light text-sm uppercase tracking-[0.2em] transition-all duration-300"
                     >
                       See Our Services
@@ -1023,10 +910,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Slide 6: Contact */}
+        {/* Section 6: Contact */}
         <section
-          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${getSlideClass(6)}`}
-          style={{ zIndex: currentSlide === 6 ? 10 : 1 }}
+          ref={(el) => { sectionRefs.current[6] = el }}
+          id="section-6"
+          className="relative min-h-screen scroll-mt-[5.5rem]"
         >
           {/* Background Image */}
           {/* To use your own image, place it in the public folder and change the URL to: url('/your-image-name.jpg') */}
@@ -1041,15 +929,18 @@ export default function Home() {
             {/* Additional subtle overlay for better contrast */}
             <div className="absolute inset-0 bg-[#0a0a0a]/40" />
           </div>
-          <div className="h-screen flex items-center justify-center relative pt-24 px-8 md:px-16">
-            <div className="max-w-4xl text-center relative z-10">
-              <h2 className="text-5xl md:text-6xl font-extralight mb-8 tracking-tight">Let's Build Something Enduring</h2>
-              <p className="text-xl md:text-2xl text-white/70 mb-6 leading-relaxed font-light max-w-2xl mx-auto">
-                Ready to scale your business? Whether you need investment, marketing, branding, or consulting services,
-                we're here to help.
+          <div className="min-h-screen flex items-center justify-center relative pt-24 page-gutter-x pb-24 md:pb-28">
+            <div className="max-w-3xl text-center relative z-10">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-extralight mb-6 md:mb-8 tracking-tight">
+                Let&apos;s Build Something That Lasts.
+              </h2>
+              <p className="text-lg md:text-xl text-white/75 mb-5 md:mb-6 leading-relaxed font-light mx-auto">
+                We partner with founders and operators to scale revenue, strengthen operations, and build businesses
+                designed to endure.
               </p>
-              <p className="text-base text-white/40 mb-12 font-light tracking-wide">
-                New York-based. Partnering with operators across the U.S.
+              <p className="text-base md:text-lg text-white/60 mb-10 md:mb-12 leading-relaxed font-light mx-auto">
+                From capital to execution across marketing, branding, and strategy—we don&apos;t sit on the sidelines.
+                We build with you.
               </p>
               <div className="space-y-6">
                 <a
@@ -1061,7 +952,7 @@ export default function Home() {
                 </a>
                 <div className="pt-4">
                   <button
-                    onClick={() => goToSlide(0)}
+                    onClick={() => scrollToSection(0)}
                     className="text-white/40 hover:text-white/60 transition-colors text-sm font-light tracking-wide"
                   >
                     Back to top
@@ -1071,7 +962,21 @@ export default function Home() {
             </div>
           </div>
         </section>
-      </div>
+      </main>
     </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-screen bg-[#0a0a0a] text-white flex items-center justify-center font-light tracking-wide">
+          Loading…
+        </div>
+      }
+    >
+      <HomePageContent />
+    </Suspense>
   )
 }
