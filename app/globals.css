@@ -8,12 +8,14 @@
 }
 
 html {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   scroll-behavior: smooth;
 }
 
 body {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   margin: 0;
   padding: 0;
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -129,4 +131,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-primary:hover::before {
   left: 100%;
+}
+
+/* Aligned horizontal padding for header, sections, and /services routes */
+@layer components {
+  .page-gutter-x {
+    @apply px-5 sm:px-8 md:px-12 lg:px-16;
+  }
 }
