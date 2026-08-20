@@ -36,11 +36,18 @@ export function SelectedBuilds({
                     {build.websiteLabel}
                   </span>
                 </div>
-                <img
-                  src={build.preview}
-                  alt={`${build.name} website`}
-                  className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
-                />
+                <video
+                  className="h-full w-full object-cover object-top"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  poster={build.preview}
+                  aria-label={`${build.name} landing page recording`}
+                >
+                  <source src={build.video} type="video/webm" />
+                </video>
               </div>
               <div className="flex flex-1 flex-col p-5 md:p-6">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-gold mb-2 font-light">{build.context}</p>

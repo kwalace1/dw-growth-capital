@@ -6,6 +6,7 @@ export type DigitalBuild = {
   website: string
   websiteLabel: string
   preview: string
+  video: string
 }
 
 /** Proof of digital execution — not portfolio companies. */
@@ -18,6 +19,7 @@ export const SELECTED_BUILDS: DigitalBuild[] = [
     website: "https://www.katanats.com/",
     websiteLabel: "katanats.com",
     preview: "/builds/katana.jpg",
+    video: "/builds/katana.webm",
   },
   {
     id: "pristine-worx",
@@ -27,6 +29,7 @@ export const SELECTED_BUILDS: DigitalBuild[] = [
     website: "https://pristineworxautodetailing.com/",
     websiteLabel: "pristineworxautodetailing.com",
     preview: "/builds/pristine-worx.jpg",
+    video: "/builds/pristine-worx.webm",
   },
   {
     id: "jewels-landing",
@@ -36,5 +39,6 @@ export const SELECTED_BUILDS: DigitalBuild[] = [
     website: "https://jewelslanding.vercel.app/",
     websiteLabel: "jewelslanding.vercel.app",
     preview: "/builds/jewels-landing.jpg",
+    video: "/builds/jewels-landing.webm",
   },
 ]
