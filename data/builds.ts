@@ -5,6 +5,7 @@ export type DigitalBuild = {
   context: string
   website: string
   websiteLabel: string
+  preview: string
 }
 
 /** Proof of digital execution — not portfolio companies. */
@@ -16,6 +17,7 @@ export const SELECTED_BUILDS: DigitalBuild[] = [
     context: "DW-owned company",
     website: "https://www.katanats.com/",
     websiteLabel: "katanats.com",
+    preview: "/builds/katana.jpg",
   },
   {
     id: "pristine-worx",
@@ -24,6 +26,7 @@ export const SELECTED_BUILDS: DigitalBuild[] = [
     context: "Built with the partnership",
     website: "https://pristineworxautodetailing.com/",
     websiteLabel: "pristineworxautodetailing.com",
+    preview: "/builds/pristine-worx.jpg",
   },
   {
     id: "jewels-landing",
@@ -32,5 +35,6 @@ export const SELECTED_BUILDS: DigitalBuild[] = [
     context: "Client build",
     website: "https://jewelslanding.vercel.app/",
     websiteLabel: "jewelslanding.vercel.app",
+    preview: "/builds/jewels-landing.jpg",
   },
 ]
