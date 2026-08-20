@@ -46,7 +46,7 @@ export function SelectedBuilds({
                   poster={build.preview}
                   aria-label={`${build.name} landing page recording`}
                 >
-                  <source src={build.video} type="video/webm" />
+                  <source src={build.video} type="video/mp4" />
                 </video>
               </div>
               <div className="flex flex-1 flex-col p-5 md:p-6">
