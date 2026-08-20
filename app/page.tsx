@@ -10,12 +10,12 @@ import { SectionIntro } from "@/components/SectionIntro"
 
 const portfolioCompanies = [
   {
-    name: "Katana Tech",
-    logo: "/katana-logo-transparent.png",
+    name: "Katana",
+    logo: "/katana-logo.png",
     description:
-      "A modern operations platform connecting projects, customers, inventory, and reporting so teams can run the business from one place.",
-    industry: "Business operations software",
-    website: "https://zenith-iota.vercel.app/",
+      "An AI technology and data company building operating systems for how companies run, how data moves, and how people get through the day—Katana Business, Katana Switch, and Katana Personal.",
+    industry: "AI · Data · Operations",
+    website: "https://www.katanats.com/",
   },
   {
     name: "Pristine Worx",
@@ -267,11 +267,11 @@ function HomePageContent() {
               <div className="grid md:grid-cols-2 gap-6 md:gap-8">
                 {portfolioCompanies.map((company) => (
                   <article key={company.name} className="surface flex flex-col overflow-hidden group">
-                    <div className="h-36 md:h-44 bg-ink flex items-center justify-center px-10">
+                    <div className="h-40 md:h-52 bg-ink flex items-center justify-center px-6 md:px-8">
                       <img
                         src={company.logo}
                         alt={`${company.name} logo`}
-                        className="max-h-20 md:max-h-24 w-auto max-w-full object-contain"
+                        className="max-h-32 md:max-h-40 w-auto max-w-full object-contain"
                       />
                     </div>
                     <div className="p-6 md:p-8 flex flex-col flex-1 border-t border-white/[0.06]">
