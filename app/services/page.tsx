@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { SERVICE_OFFERINGS } from "@/data/services"
 import { SectionIntro } from "@/components/SectionIntro"
+import { SelectedBuilds } from "@/components/SelectedBuilds"
 
 export default function ServicesIndexPage() {
   return (
@@ -35,6 +36,8 @@ export default function ServicesIndexPage() {
             </li>
           ))}
         </ul>
+
+        <SelectedBuilds className="mt-16 md:mt-20 pt-12 md:pt-16 border-t border-white/[0.08]" />
 
         <div className="mt-16 md:mt-20 border border-gold/25 bg-gold/[0.06] px-6 py-10 md:px-10 text-center">
           <p className="text-sm md:text-base text-cream/65 font-light max-w-xl mx-auto leading-relaxed mb-6">

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { SERVICE_OFFERINGS } from "@/data/services"
 import { ServiceDetailsPanel } from "@/components/ServiceDetailsPanel"
+import { SelectedBuilds } from "@/components/SelectedBuilds"
 import type { Metadata } from "next"
 
 type Props = { params: Promise<{ slug: string }> }
@@ -25,6 +26,8 @@ export default async function ServiceDetailPage({ params }: Props) {
   const service = SERVICE_OFFERINGS.find((s) => s.id === slug)
   if (!service) notFound()
 
+  const showBuilds = slug === "web-development"
+
   return (
     <div className="pb-24">
       <div className="page-gutter-x pt-12 md:pt-16">
@@ -42,7 +45,21 @@ export default async function ServiceDetailPage({ params }: Props) {
             <p className="text-lg md:text-xl text-cream/65 font-light leading-relaxed max-w-2xl">
               {service.shortDescription}
             </p>
+            {showBuilds ? (
+              <p className="mt-4 text-sm text-cream/50 font-light leading-relaxed max-w-2xl">
+                Digital buildout supports partnerships and select client work. It is how we install the front door and
+                operating layer—not the center of the firm.
+              </p>
+            ) : null}
           </header>
+
+          {showBuilds ? (
+            <SelectedBuilds
+              className="mb-12 md:mb-14"
+              title="Work we have shipped"
+              subtitle="Evidence of craft: company sites and client builds. Portfolio companies stay under Portfolio; these are the digital layer."
+            />
+          ) : null}
 
           <ServiceDetailsPanel service={service} />
 

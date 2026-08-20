@@ -16,6 +16,8 @@ export type PortfolioCompany = {
   overview: string[]
   role: string
   highlights: PortfolioHighlight[]
+  /** Optional note when digital work was part of the engagement */
+  digitalNote?: string
 }
 
 export const PORTFOLIO_COMPANIES: PortfolioCompany[] = [
@@ -24,61 +26,65 @@ export const PORTFOLIO_COMPANIES: PortfolioCompany[] = [
     name: "Katana",
     logo: "/katana-logo.png",
     shortDescription:
-      "An AI technology and data company building operating systems for how companies run, how data moves, and how people get through the day—Katana Business, Katana Switch, and Katana Personal.",
+      "A DW Growth & Capital company. We are building an AI technology and data platform so operators can run the company, move data with meaning intact, and get through the day with clarity.",
     industry: "AI · Data · Operations",
     website: "https://www.katanats.com/",
     websiteLabel: "katanats.com",
-    location: "A DW Growth & Capital company",
+    location: "Owned and operated by DW Growth & Capital",
     overview: [
-      "Katana builds sharper systems for companies, data, and people. It is an AI technology and data company: one operating idea, pointed at three problems.",
-      "Intelligence sits inside the work—not as a chatbot bolted onto a dashboard. When data moves, it should arrive ready to use. Companies, data, and people should not live in twelve disconnected tools.",
+      "Katana is not a client engagement—it is a company we own and operate. DW built the platform to put the same operator discipline we bring to partnerships into software: one operating idea for how companies run, how data moves, and how people get work done.",
+      "The product line—Katana Business, Katana Switch, and Katana Personal—exists so founders and teams stop living across disconnected tools. Intelligence sits inside the work; data arrives ready to use.",
     ],
-    role: "Current partnership. Katana is a DW Growth & Capital company—operator capital and embedded execution behind the platform.",
+    role: "DW-owned. Founder operators build and ship the platform; the firm stands behind it as operator capital in product form.",
     highlights: [
       {
+        title: "Why we built it",
+        body: "The same problem we see in lower-middle-market companies: too many systems, weak handoffs, and no single place to run the business. Katana is our answer in software.",
+      },
+      {
         title: "Katana Business",
-        body: "A connected operations OS: HR, projects, customers, inventory, workforce, and investors in one system—instead of eight tools that do not talk.",
+        body: "Connected operations OS—HR, projects, customers, inventory, workforce, and investors in one workspace.",
       },
       {
-        title: "Katana Switch",
-        body: "AI data translation. Bring a spreadsheet or a connected system, say where it should go, and send only after the result is certified.",
-      },
-      {
-        title: "Katana Personal",
-        body: "A calm daily OS: one next step, a guide that can act, and optional accountability. Private first. Currently in early access.",
+        title: "Switch & Personal",
+        body: "Katana Switch moves and translates data with certification before send. Katana Personal is a calm daily OS—one next step, private first—in early access.",
       },
     ],
+    digitalNote:
+      "The public site at katanats.com is part of how we present the company—built and maintained by the same team that ships the product.",
   },
   {
     id: "pristine-worx",
     name: "Pristine Worx",
     logo: "/pristine-worx-logo.png",
     shortDescription:
-      "Professional auto detailing in Broomall, Pennsylvania—ceramic coatings, valet, and restoration. We partnered as operators and handled the sale of the book of business at exit.",
+      "Auto detailing in Broomall, PA. We embedded as operators, professionalized how the shop ran and sold, built the customer-facing site, and handled the sale of the book of business at exit.",
     industry: "Automotive services",
     status: "Exited",
     website: "https://pristineworxautodetailing.com/",
     websiteLabel: "pristineworxautodetailing.com",
     location: "Broomall, Pennsylvania",
     overview: [
-      "Pristine Worx Auto Detailing is a professional car-care business built around ceramic coatings, valet service, and restoration—positioned as “where perfection meets passion.”",
-      "DW Growth & Capital partnered as operators: professionalizing how the shop ran, how work was sold, and how the book of business was packaged. The engagement concluded with a sale of the book of business.",
+      "Pristine Worx Auto Detailing served customers seeking ceramic coatings, valet, and restoration—positioned around craft and care, not a quick wash.",
+      "DW Growth & Capital partnered as operators: offer clarity, shop systems, customer experience, and a digital front door. The engagement closed with a structured sale of the book of business—a realized outcome, not an open-ended retainer.",
     ],
-    role: "Realized outcome. We exited after operating in the business and handling the sale of the book of business.",
+    role: "Realized exit. Operated inside the business, shipped the website as part of that work, and handled the sale of the book of business.",
     highlights: [
       {
-        title: "The business",
-        body: "Local auto detailing in Broomall, PA—ceramic coatings, valet, and restoration for customers who wanted the vehicle brought back to a higher standard than a typical wash.",
+        title: "Operate",
+        body: "Hands-on work in the shop: how work was sold, how capacity was used, and how the customer experience held up under growth.",
       },
       {
-        title: "How we showed up",
-        body: "Operator work inside the shop: systems, offer, and customer experience so the company could run with less founder gravity and a cleaner story to a buyer.",
+        title: "Build",
+        body: "Customer-facing website designed and built by DW—booking, services, and brand—so the company had a conversion-ready digital layer, not a placeholder.",
       },
       {
-        title: "The exit",
-        body: "We structured and handled the sale of the book of business—converting operating work into a realized transaction rather than an open-ended retainer.",
+        title: "Exit",
+        body: "We packaged and handled the sale of the book of business, converting operating work into a closed transaction.",
       },
     ],
+    digitalNote:
+      "The live site was designed and built by DW Growth & Capital as part of the operating engagement—not a separate web-agency project.",
   },
 ]
 

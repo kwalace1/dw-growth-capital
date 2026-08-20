@@ -106,6 +106,13 @@ export default async function PortfolioCompanyPage({ params }: Props) {
             ))}
           </div>
 
+          {company.digitalNote ? (
+            <div className="mt-10 surface border-gold/20 p-6 md:p-8">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-gold mb-3">Digital layer</p>
+              <p className="text-cream/70 font-light text-sm md:text-base leading-relaxed">{company.digitalNote}</p>
+            </div>
+          ) : null}
+
           <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
             <Link
               href="/#section-3"

@@ -186,12 +186,12 @@ export const SERVICE_OFFERINGS: ServiceOffering[] = [
                     id: "web-development",
                     title: "Web Development & Digital Buildout",
                     shortDescription:
-                      "High-conversion websites and digital buildouts designed to generate leads, support operations, and scale with the business.",
+                      "Websites and digital buildouts that support lead capture and operations—shipped as part of how we execute inside partnerships, and for select client builds.",
                     icon: "\u2192",
                     details: {
                       mainTitle: "Web Development & Digital Buildout",
                       subtitle:
-                        "Professional builds across Basic, Standard, and Premium tiers — engineered for performance, lead capture, clarity, and ROI, not vanity design.",
+                        "We build conversion-ready sites when the digital layer matters to cash flow—inside an operating partnership or as a defined build. Craft and ROI over vanity design.",
                       services: [
                         {
                           name: "Basic Business Site",

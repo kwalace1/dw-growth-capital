@@ -8,6 +8,7 @@ import { HOME_SECTIONS, totalSlides } from "@/data/nav"
 import { PORTFOLIO_COMPANIES } from "@/data/portfolio"
 import { SiteHeader } from "@/components/SiteHeader"
 import { SectionIntro } from "@/components/SectionIntro"
+import { SelectedBuilds } from "@/components/SelectedBuilds"
 
 const approachSteps = [
   {
@@ -173,8 +174,13 @@ function HomePageContent() {
               <SectionIntro
                 kicker="01 — The Firm"
                 title="The Firm"
-                subtitle="New York-based. Partnering with operators nationwide, typically at $1M–$10M in annual revenue."
+                subtitle="New York-based. Founder-operated. We partner with operators nationwide—typically companies with $1M–$10M in annual revenue."
               />
+              <p className="text-base md:text-lg text-cream/65 font-light leading-relaxed max-w-3xl mb-12 md:mb-16">
+                DW Growth & Capital is run by founders who build and ship the work themselves—platforms like Katana,
+                operating engagements like Pristine Worx, and the digital infrastructure that makes those companies
+                easier to run and sell. We are not a bench of advisors on the sidelines.
+              </p>
               <div className="grid md:grid-cols-2 gap-10 md:gap-16">
                 <div className="border-l border-gold/40 pl-6 md:pl-8">
                   <h3 className="font-serif text-2xl md:text-[1.75rem] mb-5 text-gold leading-snug">
@@ -204,6 +210,29 @@ function HomePageContent() {
                       is the work.
                     </p>
                   </div>
+                </div>
+              </div>
+              <div className="mt-12 md:mt-16 surface p-6 md:p-8 grid sm:grid-cols-3 gap-6 md:gap-8">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gold mb-2 font-light">Who we partner with</p>
+                  <p className="text-sm text-cream/65 font-light leading-relaxed">
+                    Founders and operators in the early-stage and lower middle market—typically $1M–$10M revenue—ready
+                    for a partner in the business, not a vendor on the outside.
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gold mb-2 font-light">How we show up</p>
+                  <p className="text-sm text-cream/65 font-light leading-relaxed">
+                    Sweat equity and embedded execution: ops, brand, demand, and digital—structured around the company,
+                    not a fixed product list.
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gold mb-2 font-light">What “done” looks like</p>
+                  <p className="text-sm text-cream/65 font-light leading-relaxed">
+                    Stronger cash flow, less founder gravity, and—when the time is right—a cleaner path to exit or the
+                    next stage of capital.
+                  </p>
                 </div>
               </div>
             </div>
@@ -312,6 +341,8 @@ function HomePageContent() {
                   </Link>
                 ))}
               </div>
+
+              <SelectedBuilds className="mt-16 md:mt-20 pt-12 md:pt-16 border-t border-white/[0.08]" />
 
               <div className="mt-12 md:mt-16 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-gold/25 bg-gold/[0.06] px-6 py-8 md:px-10 md:py-10">
                 <p className="text-sm md:text-base text-cream/70 font-light max-w-xl leading-relaxed">
