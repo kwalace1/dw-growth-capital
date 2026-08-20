@@ -5,28 +5,9 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { SERVICE_OFFERINGS } from "@/data/services"
 import { HOME_SECTIONS, totalSlides } from "@/data/nav"
+import { PORTFOLIO_COMPANIES } from "@/data/portfolio"
 import { SiteHeader } from "@/components/SiteHeader"
 import { SectionIntro } from "@/components/SectionIntro"
-
-const portfolioCompanies = [
-  {
-    name: "Katana",
-    logo: "/katana-logo.png",
-    description:
-      "An AI technology and data company building operating systems for how companies run, how data moves, and how people get through the day—Katana Business, Katana Switch, and Katana Personal.",
-    industry: "AI · Data · Operations",
-    website: "https://www.katanats.com/",
-  },
-  {
-    name: "Pristine Worx",
-    logo: "/pristine-worx-logo.png",
-    description:
-      "Professional auto detailing in Broomall, Pennsylvania—ceramic coatings, valet, and restoration. We partnered as operators and handled the sale of the book of business at exit.",
-    industry: "Automotive services",
-    status: "Exited",
-    website: "https://pristineworxautodetailing.com/",
-  },
-]
 
 const approachSteps = [
   {
@@ -266,13 +247,17 @@ function HomePageContent() {
                 subtitle="Companies we back as operators—and realized outcomes when the work is done."
               />
               <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-                {portfolioCompanies.map((company) => (
-                  <article key={company.name} className="surface flex flex-col overflow-hidden group">
-                    <div className="h-40 md:h-52 bg-ink flex items-center justify-center px-6 md:px-8">
+                {PORTFOLIO_COMPANIES.map((company) => (
+                  <Link
+                    key={company.id}
+                    href={`/portfolio/${company.id}`}
+                    className="surface flex flex-col overflow-hidden group hover:border-gold/35 transition-colors duration-300"
+                  >
+                    <div className="h-52 md:h-64 bg-ink flex items-center justify-center px-4 md:px-8 py-8">
                       <img
                         src={company.logo}
                         alt={`${company.name} logo`}
-                        className="max-h-32 md:max-h-40 w-auto max-w-full object-contain"
+                        className="max-h-44 md:max-h-52 w-auto max-w-full object-contain"
                       />
                     </div>
                     <div className="p-6 md:p-8 flex flex-col flex-1 border-t border-white/[0.06]">
@@ -280,26 +265,21 @@ function HomePageContent() {
                         <p className="text-[10px] uppercase tracking-[0.2em] text-gold font-light">
                           {company.industry}
                         </p>
-                        {"status" in company && company.status ? (
+                        {company.status ? (
                           <p className="text-[10px] uppercase tracking-[0.2em] text-cream/45 font-light">
                             {company.status}
                           </p>
                         ) : null}
                       </div>
                       <h3 className="font-serif text-2xl text-cream mb-3">{company.name}</h3>
-                      <p className="text-sm text-cream/60 font-light leading-relaxed flex-1">{company.description}</p>
-                      {company.website ? (
-                        <a
-                          href={company.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-6 text-[11px] uppercase tracking-[0.16em] text-gold hover:text-gold-light font-light"
-                        >
-                          Visit site →
-                        </a>
-                      ) : null}
+                      <p className="text-sm text-cream/60 font-light leading-relaxed flex-1">
+                        {company.shortDescription}
+                      </p>
+                      <p className="mt-6 text-[11px] uppercase tracking-[0.16em] text-gold font-light group-hover:text-gold-light">
+                        Read more →
+                      </p>
                     </div>
-                  </article>
+                  </Link>
                 ))}
               </div>
             </div>
