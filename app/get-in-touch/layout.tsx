@@ -1,12 +1,17 @@
 import type { Metadata } from "next"
-import { GetInTouchClientLayout } from "./GetInTouchClientLayout"
+import { SiteHeader } from "@/components/SiteHeader"
 
 export const metadata: Metadata = {
-  title: "Get in touch | DW Growth & Capital",
+  title: "Contact",
   description:
-    "Reach out to discuss a custom partnership or tailored sweat-equity arrangement for your business.",
+    "Talk with DW Growth & Capital about a sweat-equity partnership. Tell us about the company, the stage, and what you need an operator for.",
 }
 
 export default function GetInTouchLayout({ children }: { children: React.ReactNode }) {
-  return <GetInTouchClientLayout>{children}</GetInTouchClientLayout>
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      <SiteHeader />
+      <main>{children}</main>
+    </div>
+  )
 }

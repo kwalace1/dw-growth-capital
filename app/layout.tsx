@@ -13,8 +13,21 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: "DW Growth & Capital | Sweat Equity Firm | Marketing, Branding & Consulting",
-  description: "DW Growth & Capital is a sweat equity firm providing investment, marketing, branding, and consulting services. We partner with founders to scale companies sustainably.",
+  metadataBase: new URL("https://dwgrowthcapital.com"),
+  title: {
+    default: "DW Growth & Capital | Operator-First Sweat Equity",
+    template: "%s | DW Growth & Capital",
+  },
+  description:
+    "DW Growth & Capital is an operator-first sweat equity firm. We partner with founders in the lower middle market to professionalize operations, unlock cash flow, and scale enduring companies.",
+  openGraph: {
+    title: "DW Growth & Capital | Operator-First Sweat Equity",
+    description:
+      "We partner with founders as operators—embedding to professionalize operations, unlock cash flow, and build companies that last.",
+    type: "website",
+    locale: "en_US",
+    siteName: "DW Growth & Capital",
+  },
 }
 
 export default function RootLayout({

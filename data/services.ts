@@ -20,9 +20,6 @@ export type ServiceOffering = {
   details: ServiceOfferingDetails
 }
 
-/** Featured service — used for spotlight styling across the site */
-export const WEB_DEVELOPMENT_ID = "web-development" as const
-
 export const SERVICE_OFFERINGS: ServiceOffering[] = [
                   {
                     id: "consulting",
@@ -172,15 +169,15 @@ export const SERVICE_OFFERINGS: ServiceOffering[] = [
                           bestFor: "Businesses seeking faster growth without jumping to enterprise-level spend."
                         },
                         {
-                          name: "Market Dominance (Tier 4)",
-                          description: "A comprehensive digital marketing and growth partnership.",
+                          name: "Full-cycle (Tier 4)",
+                          description: "A comprehensive demand-generation and growth partnership.",
                           includes: [
                             "Weekly reporting",
                             "Full digital marketing team",
                             "Monthly consulting, strategy, and growth meetings",
                             "Multiple simultaneous campaigns"
                           ],
-                          bestFor: "Larger or aggressive-growth companies looking to dominate their market."
+                          bestFor: "Companies that want a full operating partner on demand generation, not a campaign vendor."
                         }
                       ]
                     }
@@ -236,7 +233,7 @@ export const SERVICE_OFFERINGS: ServiceOffering[] = [
 
 export function getServicesNavLinks(): { href: string; label: string }[] {
   return [
-    { href: "/services", label: "All services" },
+    { href: "/services", label: "All capabilities" },
     ...SERVICE_OFFERINGS.map((s) => ({
       href: `/services/${s.id}`,
       label: s.title,

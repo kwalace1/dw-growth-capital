@@ -13,9 +13,9 @@ export default function GetInTouchPage() {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
-    const subject = encodeURIComponent("Custom deal inquiry — DW Growth & Capital")
+    const subject = encodeURIComponent("Partnership inquiry — DW Growth & Capital")
     const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\nCompany / project: ${company || "(not provided)"}\n\nWhat we're looking for:\n${message}\n`
+      `Name: ${name}\nEmail: ${email}\nCompany: ${company || "(not provided)"}\n\nContext:\n${message}\n`
     )
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`
   }
@@ -28,14 +28,14 @@ export default function GetInTouchPage() {
     <div className="page-gutter-x pb-24 pt-8 md:pt-12">
       <div className="max-w-3xl mx-auto">
         <p className="text-center text-[10px] md:text-xs font-light uppercase tracking-[0.25em] text-[#C4A574]/90 mb-4">
-          Custom partnerships
+          Partnerships
         </p>
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extralight mb-4 md:mb-6 tracking-tight text-center">
-          Get in touch with us
+          Work with us
         </h1>
         <p className="text-base md:text-lg text-white/50 font-light max-w-2xl mx-auto text-center mb-10 md:mb-12 leading-relaxed">
-          Interested in a tailored arrangement or custom deal? Tell us about your business, goals, and how you&apos;d
-          like to work together. We&apos;ll follow up directly.
+          Tell us about the company, the stage, and what you need an operator for. If there is a fit, we will follow up
+          directly.
         </p>
 
         <div className="border border-white/10 bg-white/[0.03] p-6 md:p-10 rounded-sm">
@@ -74,7 +74,7 @@ export default function GetInTouchPage() {
             </div>
             <div>
               <label htmlFor="git-company" className={labelClass}>
-                Company or project <span className="text-white/35 normal-case tracking-normal">(optional)</span>
+                Company <span className="text-white/35 normal-case tracking-normal">(optional)</span>
               </label>
               <input
                 id="git-company"
@@ -84,12 +84,12 @@ export default function GetInTouchPage() {
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 className={fieldClass}
-                placeholder="Where you're building"
+                placeholder="Company name"
               />
             </div>
             <div>
               <label htmlFor="git-message" className={labelClass}>
-                Custom deal or partnership details
+                What should we know
               </label>
               <textarea
                 id="git-message"
@@ -99,7 +99,7 @@ export default function GetInTouchPage() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 className={`${fieldClass} resize-y min-h-[140px]`}
-                placeholder="Share context on stage, revenue, what you need from us, and what a win looks like for you."
+                placeholder="Stage, revenue range, what is stuck, and what a win looks like in 12 months."
               />
             </div>
             <div className="pt-2 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
@@ -124,7 +124,7 @@ export default function GetInTouchPage() {
         <p className="mt-10 text-center text-sm text-white/45 font-light">
           Prefer the full story first?{" "}
           <Link href="/services" className="text-[#C4A574] hover:text-[#D4B584] transition-colors">
-            Explore our services
+            How we execute
           </Link>{" "}
           or{" "}
           <Link href="/" className="text-[#C4A574] hover:text-[#D4B584] transition-colors">

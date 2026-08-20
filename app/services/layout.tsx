@@ -1,21 +1,16 @@
-"use client"
+import type { Metadata } from "next"
+import { SiteHeader } from "@/components/SiteHeader"
 
-import { useEffect } from "react"
-import { ServiceSiteHeader } from "@/components/ServiceSiteHeader"
+export const metadata: Metadata = {
+  title: "Capabilities",
+  description:
+    "How DW Growth & Capital executes inside partnerships: strategy and operations, brand, demand generation, and digital infrastructure.",
+}
 
 export default function ServicesLayout({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    document.documentElement.style.overflowY = "auto"
-    document.body.style.overflowY = "auto"
-    return () => {
-      document.documentElement.style.overflowY = ""
-      document.body.style.overflowY = ""
-    }
-  }, [])
-
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <ServiceSiteHeader />
+      <SiteHeader />
       <main>{children}</main>
     </div>
   )
