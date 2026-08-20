@@ -21,8 +21,9 @@ const portfolioCompanies = [
     name: "Pristine Worx",
     logo: "/pristine-worx-logo.png",
     description:
-      "Professional auto detailing in Broomall, Pennsylvania—ceramic coatings, valet, and restoration built around a premium customer experience.",
+      "Professional auto detailing in Broomall, Pennsylvania—ceramic coatings, valet, and restoration. We partnered as operators and handled the sale of the book of business at exit.",
     industry: "Automotive services",
+    status: "Exited",
     website: "https://pristineworxautodetailing.com/",
   },
 ]
@@ -262,7 +263,7 @@ function HomePageContent() {
               <SectionIntro
                 kicker="03 — Portfolio"
                 title="Portfolio"
-                subtitle="Early-stage and lower-middle-market companies we back as operators."
+                subtitle="Companies we back as operators—and realized outcomes when the work is done."
               />
               <div className="grid md:grid-cols-2 gap-6 md:gap-8">
                 {portfolioCompanies.map((company) => (
@@ -275,9 +276,16 @@ function HomePageContent() {
                       />
                     </div>
                     <div className="p-6 md:p-8 flex flex-col flex-1 border-t border-white/[0.06]">
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-gold mb-2 font-light">
-                        {company.industry}
-                      </p>
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-gold font-light">
+                          {company.industry}
+                        </p>
+                        {"status" in company && company.status ? (
+                          <p className="text-[10px] uppercase tracking-[0.2em] text-cream/45 font-light">
+                            {company.status}
+                          </p>
+                        ) : null}
+                      </div>
                       <h3 className="font-serif text-2xl text-cream mb-3">{company.name}</h3>
                       <p className="text-sm text-cream/60 font-light leading-relaxed flex-1">{company.description}</p>
                       {company.website ? (
