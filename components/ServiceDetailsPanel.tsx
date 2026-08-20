@@ -4,43 +4,41 @@ export function ServiceDetailsPanel({ service }: { service: ServiceOffering }) {
   if (!service.details) return null
 
   return (
-    <div className="px-6 md:px-8 pb-6 md:pb-8 border-t border-white/10 pt-4 md:pt-6 space-y-6">
+    <div className="space-y-8">
       <div>
-        <h4 className="text-lg md:text-xl font-light text-white mb-2 tracking-tight">{service.details.mainTitle}</h4>
-        <p className="text-white/70 font-light text-sm leading-relaxed">{service.details.subtitle}</p>
+        <h2 className="font-serif text-2xl md:text-3xl text-cream mb-3">{service.details.mainTitle}</h2>
+        <p className="text-cream/65 font-light text-sm md:text-base leading-relaxed max-w-2xl">
+          {service.details.subtitle}
+        </p>
       </div>
 
-      <div className="space-y-5">
-        {service.details.services.map((item, itemIdx) => (
-          <div key={itemIdx} className="border-l-2 border-[#C4A574]/30 pl-4 md:pl-5">
-            <h5 className="text-base md:text-lg font-light text-[#C4A574] mb-2">{item.name}</h5>
-            <p className="text-white/70 font-light text-xs md:text-sm mb-3 leading-relaxed">{item.description}</p>
-            <div className="mb-2">
-              <p className="text-white/60 text-xs uppercase tracking-wide mb-1.5">Includes:</p>
-              <ul className="space-y-1">
-                {item.includes.map((include, includeIdx) => (
-                  <li key={includeIdx} className="text-white/70 text-xs md:text-sm font-light flex items-start">
-                    <span className="text-[#C4A574] mr-2 flex-shrink-0">•</span>
-                    <span>{include}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <p className="text-white/50 text-xs italic mt-2">
-              <span className="font-medium">Best for:</span> {item.bestFor}
+      <div className="space-y-4">
+        {service.details.services.map((item) => (
+          <article key={item.name} className="surface p-6 md:p-8">
+            <h3 className="font-serif text-xl text-gold mb-2">{item.name}</h3>
+            <p className="text-cream/70 font-light text-sm mb-5 leading-relaxed">{item.description}</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-cream/40 mb-2">Includes</p>
+            <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5 mb-5">
+              {item.includes.map((include) => (
+                <li key={include} className="text-cream/65 text-sm font-light pl-3 border-l border-gold/30">
+                  {include}
+                </li>
+              ))}
+            </ul>
+            <p className="text-cream/45 text-sm font-light leading-relaxed">
+              <span className="text-gold/80">Best for.</span> {item.bestFor}
             </p>
-          </div>
+          </article>
         ))}
       </div>
 
       {service.details.addOns && (
-        <div className="pt-4 border-t border-white/10">
-          <h5 className="text-base md:text-lg font-light text-[#C4A574] mb-3">Industry-Specific Add-Ons</h5>
-          <ul className="space-y-1.5">
-            {service.details.addOns.map((addOn, addOnIdx) => (
-              <li key={addOnIdx} className="text-white/70 text-xs md:text-sm font-light flex items-start">
-                <span className="text-[#C4A574] mr-2 flex-shrink-0">•</span>
-                <span>{addOn}</span>
+        <div className="surface p-6 md:p-8">
+          <h3 className="font-serif text-xl text-gold mb-4">Industry-specific add-ons</h3>
+          <ul className="space-y-2">
+            {service.details.addOns.map((addOn) => (
+              <li key={addOn} className="text-cream/65 text-sm font-light pl-3 border-l border-gold/30">
+                {addOn}
               </li>
             ))}
           </ul>

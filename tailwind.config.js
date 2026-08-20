@@ -7,20 +7,19 @@ module.exports = {
   ],
   theme: {
     extend: {
-      keyframes: {
-        'gold-spotlight': {
-          '0%, 100%': {
-            boxShadow:
-              '0 0 0 1px rgba(196, 165, 116, 0.35), 0 0 28px rgba(196, 165, 116, 0.12), inset 0 1px 0 0 rgba(255,255,255,0.06)',
-          },
-          '50%': {
-            boxShadow:
-              '0 0 0 1px rgba(196, 165, 116, 0.65), 0 0 48px rgba(196, 165, 116, 0.28), inset 0 1px 0 0 rgba(255,255,255,0.08)',
-          },
+      colors: {
+        ink: "#071412",
+        forest: "#0D221F",
+        gold: {
+          DEFAULT: "#C4A574",
+          dark: "#B39564",
+          light: "#E8D4B0",
         },
+        cream: "#F3EDE3",
       },
-      animation: {
-        'gold-spotlight': 'gold-spotlight 4s ease-in-out infinite',
+      fontFamily: {
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        serif: ["var(--font-playfair)", "Georgia", "serif"],
       },
     },
   },

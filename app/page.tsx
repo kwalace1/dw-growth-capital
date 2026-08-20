@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation"
 import { SERVICE_OFFERINGS } from "@/data/services"
 import { HOME_SECTIONS, totalSlides } from "@/data/nav"
 import { SiteHeader } from "@/components/SiteHeader"
+import { SectionIntro } from "@/components/SectionIntro"
 
 const portfolioCompanies = [
   {
@@ -23,15 +24,6 @@ const portfolioCompanies = [
       "Professional auto detailing in Broomall, Pennsylvania—ceramic coatings, valet, and restoration built around a premium customer experience.",
     industry: "Automotive services",
     website: "https://pristineworxautodetailing.com/",
-  },
-  {
-    name: "Restorative Acres",
-    logo: "/restorative-acres-logo.png",
-    blend: true,
-    description:
-      "A Maryland retreat offering nature-based and animal-assisted mental health care for rural communities that traditional clinics underserve.",
-    industry: "Mental health & wellness",
-    website: "",
   },
 ]
 
@@ -108,20 +100,27 @@ function HomePageContent() {
     }
   }, [])
 
+  const setSectionRef = (index: number) => (el: HTMLElement | null) => {
+    sectionRefs.current[index] = el
+  }
+
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#0a0a0a] text-white">
+    <div className="relative min-h-screen overflow-x-hidden bg-ink text-cream">
       <SiteHeader currentSlide={currentSlide} onNavigateSlide={scrollToSection} />
 
-      <nav className="fixed right-5 md:right-8 lg:right-12 top-1/2 -translate-y-1/2 z-40 hidden lg:block" aria-label="Page sections">
-        <div className="space-y-4">
+      <nav
+        className="fixed right-5 md:right-8 top-1/2 -translate-y-1/2 z-40 hidden xl:block"
+        aria-label="Page sections"
+      >
+        <div className="space-y-3">
           {HOME_SECTIONS.map((section, index) => (
             <button
               key={section.id}
               type="button"
               onClick={() => scrollToSection(index)}
-              className={`block transition-all duration-500 ${
-                currentSlide === index ? "w-2 h-8 bg-[#C4A574]" : "w-1 h-1 bg-white/20 hover:bg-white/40"
-              } rounded-full`}
+              className={`block rounded-full transition-all duration-500 ${
+                currentSlide === index ? "w-1.5 h-7 bg-gold" : "w-1.5 h-1.5 bg-cream/25 hover:bg-cream/50"
+              }`}
               aria-label={section.label}
               aria-current={currentSlide === index ? "true" : undefined}
             />
@@ -129,104 +128,96 @@ function HomePageContent() {
         </div>
       </nav>
 
-      <div className="fixed bottom-0 left-0 right-0 h-0.5 bg-white/5 z-50">
+      <div className="fixed bottom-0 left-0 right-0 h-px bg-white/5 z-50">
         <div
-          className="h-full bg-[#C4A574] transition-[width] duration-150 ease-out"
+          className="h-full bg-gold transition-[width] duration-150 ease-out"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
 
       <main className="relative w-full">
         <section
-          ref={(el) => {
-            sectionRefs.current[0] = el
-          }}
+          ref={setSectionRef(0)}
           id="section-0"
-          className="relative min-h-[100dvh] min-h-screen scroll-mt-[5.5rem] flex flex-col"
+          className="relative min-h-[100dvh] scroll-mt-[5.5rem] flex flex-col lg:flex-row"
         >
           <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            className="absolute inset-0 lg:hidden bg-cover bg-center"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2400&q=88')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80')`,
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/55 via-[#0a0a0a]/45 to-[#0a0a0a]/75" />
-            <div className="absolute inset-0 bg-[#0a0a0a]/25" />
+            <div className="absolute inset-0 bg-ink/75" />
           </div>
 
-          <div className="relative z-10 flex flex-1 flex-col justify-center w-full max-w-4xl mx-auto page-gutter-x py-24 sm:py-28 md:py-32 text-center">
-            <p className="text-[10px] md:text-xs font-light uppercase tracking-[0.28em] text-[#C4A574] mb-6">
-              Operator-first sweat equity
-            </p>
-            <h1 className="text-[1.65rem] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extralight mb-6 sm:mb-8 md:mb-10 leading-[1.12] sm:leading-[1.1] tracking-tight">
+          <div className="relative z-10 flex flex-1 flex-col justify-center w-full lg:w-[56%] page-gutter-x pt-28 pb-16 lg:py-0 lg:bg-ink">
+            <p className="kicker mb-6">Operator-first sweat equity</p>
+            <h1 className="display text-[2.15rem] sm:text-5xl lg:text-6xl xl:text-[4.15rem] leading-[1.08] mb-8 max-w-xl">
               Backing Builders.
               <br />
-              <span className="text-[#C4A574] font-light">Creating Operators.</span>
+              <span className="text-gold">Creating Operators.</span>
               <br />
               Scaling Companies.
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-white/72 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed font-light">
+            <div className="h-px w-16 bg-gold mb-8" />
+            <p className="text-base sm:text-lg text-cream/70 mb-10 max-w-lg leading-relaxed font-light">
               DW Growth & Capital partners with founders in the lower middle market. We put in work alongside capital:
               embedding to professionalize operations, unlock cash flow, and build companies that endure.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center w-full sm:w-auto mx-auto">
-              <button
-                type="button"
-                onClick={() => scrollToSection(1)}
-                className="group relative px-10 py-4 bg-[#C4A574] hover:bg-[#B39564] text-[#0a0a0a] font-light text-sm uppercase tracking-[0.2em] transition-all duration-300 overflow-hidden"
-              >
-                <span className="relative z-10">The Firm</span>
-                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+              <button type="button" onClick={() => scrollToSection(1)} className="btn-gold">
+                The Firm
               </button>
-              <Link
-                href="/get-in-touch"
-                className="px-10 py-4 bg-transparent hover:bg-white/5 text-white border border-white/20 hover:border-white/40 font-light text-sm uppercase tracking-[0.2em] transition-all duration-300 text-center"
-              >
+              <Link href="/get-in-touch" className="btn-ghost">
                 Work With Us
               </Link>
             </div>
           </div>
+
+          <div
+            className="hidden lg:block lg:w-[44%] relative min-h-[100dvh] bg-cover bg-center"
+            style={{
+              backgroundImage: `url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=88')`,
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-ink/20 to-ink" />
+            <div className="absolute inset-0 bg-[#071412]/25" />
+          </div>
         </section>
 
-        <section
-          ref={(el) => {
-            sectionRefs.current[1] = el
-          }}
-          id="section-1"
-          className="relative min-h-screen scroll-mt-[5.5rem] bg-[#0f0f0f]"
-        >
-          <div className="flex flex-col pt-24 page-gutter-x pb-24 md:pb-28">
-            <div className="max-w-6xl w-full mx-auto py-12 md:py-16">
-              <h2 className="text-5xl md:text-6xl font-extralight mb-6 md:mb-8 tracking-tight text-center">The Firm</h2>
-              <p className="text-center text-base md:text-lg text-white/50 font-light max-w-2xl mx-auto mb-12 md:mb-16">
-                New York-based. Partnering with operators nationwide, typically at $1M–$10M in annual revenue.
-              </p>
-
+        <section ref={setSectionRef(1)} id="section-1" className="relative scroll-mt-[5.5rem] bg-forest">
+          <div className="page-gutter-x py-24 md:py-32">
+            <div className="max-w-6xl mx-auto">
+              <SectionIntro
+                kicker="01 — The Firm"
+                title="The Firm"
+                subtitle="New York-based. Partnering with operators nationwide, typically at $1M–$10M in annual revenue."
+              />
               <div className="grid md:grid-cols-2 gap-10 md:gap-16">
-                <div>
-                  <h3 className="text-2xl md:text-3xl font-extralight mb-5 text-[#C4A574] tracking-tight">
+                <div className="border-l border-gold/40 pl-6 md:pl-8">
+                  <h3 className="font-serif text-2xl md:text-[1.75rem] mb-5 text-gold leading-snug">
                     Sweat equity, not sideline capital
                   </h3>
-                  <div className="space-y-5 text-base md:text-lg text-white/70 leading-relaxed font-light">
+                  <div className="space-y-5 text-base md:text-[1.05rem] text-cream/70 leading-relaxed font-light">
                     <p>
                       We take a real seat next to leadership. Operating systems, pricing guardrails, SOPs, and growth
                       infrastructure get installed in the business—not presented in a deck.
                     </p>
-                    <p className="text-white/55">
+                    <p className="text-cream/50">
                       The goal is durable cash flow and a company that can run without heroics from the founder.
                     </p>
                   </div>
                 </div>
-                <div>
-                  <h3 className="text-2xl md:text-3xl font-extralight mb-5 text-[#C4A574] tracking-tight">
+                <div className="border-l border-gold/40 pl-6 md:pl-8">
+                  <h3 className="font-serif text-2xl md:text-[1.75rem] mb-5 text-gold leading-snug">
                     Execution is the investment
                   </h3>
-                  <div className="space-y-5 text-base md:text-lg text-white/70 leading-relaxed font-light">
+                  <div className="space-y-5 text-base md:text-[1.05rem] text-cream/70 leading-relaxed font-light">
                     <p>
                       Strategy, brand, demand, and digital buildout are how we show up inside a partnership—not a
                       separate agency menu. We use them to move the P&amp;L.
                     </p>
-                    <p className="text-white/55">
+                    <p className="text-cream/50">
                       If a company only needs a vendor, we are the wrong call. If it needs an operator in the arena, that
                       is the work.
                     </p>
@@ -237,49 +228,27 @@ function HomePageContent() {
           </div>
         </section>
 
-        <section
-          ref={(el) => {
-            sectionRefs.current[2] = el
-          }}
-          id="section-2"
-          className="relative min-h-screen scroll-mt-[5.5rem] bg-[#0a0a0a]"
-        >
-          <div className="flex flex-col pt-24 page-gutter-x pb-24 md:pb-28">
-            <div className="max-w-6xl w-full mx-auto py-12 md:py-16">
-              <div className="mb-12 md:mb-16 text-center">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extralight mb-4 md:mb-6 tracking-tight">
-                  How We Partner
-                </h2>
-                <p className="text-base md:text-lg text-white/50 font-light max-w-2xl mx-auto">
-                  A repeatable operating sequence: underwrite, install, run, compound.
-                </p>
-              </div>
-
-              <div className="space-y-6 md:space-y-8">
+        <section ref={setSectionRef(2)} id="section-2" className="relative scroll-mt-[5.5rem] bg-ink">
+          <div className="page-gutter-x py-24 md:py-32">
+            <div className="max-w-6xl mx-auto">
+              <SectionIntro
+                kicker="02 — Approach"
+                title="How We Partner"
+                subtitle="A repeatable operating sequence: underwrite, install, run, compound."
+              />
+              <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-px bg-white/10 border border-white/10">
                 {approachSteps.map((step) => (
-                  <div
-                    key={step.number}
-                    className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 p-6 md:p-8 transition-all duration-500"
-                  >
-                    <div className="flex items-start gap-4 md:gap-6">
-                      <div className="text-2xl md:text-3xl font-light text-[#C4A574] flex-shrink-0">{step.number}</div>
-                      <div className="flex-1">
-                        <h3 className="text-xl md:text-2xl font-light mb-2 md:mb-3 text-white tracking-tight">
-                          {step.title}
-                        </h3>
-                        <p className="text-white/70 font-light text-sm md:text-base leading-relaxed mb-3 md:mb-4">
-                          {step.subtext}
-                        </p>
-                        <ul className="space-y-1.5">
-                          {step.bullets.map((bullet) => (
-                            <li key={bullet} className="text-white/60 text-xs md:text-sm font-light flex items-start">
-                              <span className="text-[#C4A574] mr-2 flex-shrink-0">•</span>
-                              <span>{bullet}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
+                  <div key={step.number} className="bg-ink p-6 md:p-8">
+                    <p className="font-serif text-gold text-lg mb-4">{step.number}</p>
+                    <h3 className="font-serif text-xl text-cream mb-3 leading-snug">{step.title}</h3>
+                    <p className="text-cream/65 font-light text-sm leading-relaxed mb-5">{step.subtext}</p>
+                    <ul className="space-y-2">
+                      {step.bullets.map((bullet) => (
+                        <li key={bullet} className="text-cream/50 text-xs font-light leading-relaxed pl-3 border-l border-gold/30">
+                          {bullet}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 ))}
               </div>
@@ -287,70 +256,41 @@ function HomePageContent() {
           </div>
         </section>
 
-        <section
-          ref={(el) => {
-            sectionRefs.current[3] = el
-          }}
-          id="section-3"
-          className="relative min-h-screen scroll-mt-[5.5rem] bg-[#0f0f0f]"
-        >
-          <div className="flex flex-col pt-24 page-gutter-x pb-24 md:pb-28">
-            <div className="max-w-6xl w-full mx-auto py-12 md:py-16">
-              <div className="mb-12 md:mb-16 text-center">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extralight mb-4 md:mb-6 tracking-tight">
-                  Portfolio
-                </h2>
-                <p className="text-base md:text-lg text-white/50 font-light max-w-2xl mx-auto">
-                  Early-stage and lower-middle-market companies we back as operators.
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+        <section ref={setSectionRef(3)} id="section-3" className="relative scroll-mt-[5.5rem] bg-forest">
+          <div className="page-gutter-x py-24 md:py-32">
+            <div className="max-w-6xl mx-auto">
+              <SectionIntro
+                kicker="03 — Portfolio"
+                title="Portfolio"
+                subtitle="Early-stage and lower-middle-market companies we back as operators."
+              />
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8">
                 {portfolioCompanies.map((company) => (
-                  <article
-                    key={company.name}
-                    className="flex flex-col border border-white/10 bg-white/[0.03] p-6 md:p-8"
-                  >
-                    <div className="h-24 md:h-28 mb-6 flex items-center justify-center">
-                      {company.blend ? (
-                        <div
-                          className="w-full h-full"
-                          style={{
-                            backgroundImage: `url(${company.logo})`,
-                            backgroundSize: "contain",
-                            backgroundPosition: "center",
-                            backgroundRepeat: "no-repeat",
-                            mixBlendMode: "lighten",
-                            filter: "brightness(1.3) contrast(1.1)",
-                          }}
-                          role="img"
-                          aria-label={`${company.name} logo`}
-                        />
-                      ) : (
-                        <img
-                          src={company.logo}
-                          alt={`${company.name} logo`}
-                          className="max-h-full w-auto max-w-full object-contain"
-                        />
-                      )}
+                  <article key={company.name} className="surface flex flex-col overflow-hidden group">
+                    <div className="h-36 md:h-44 bg-ink flex items-center justify-center px-10">
+                      <img
+                        src={company.logo}
+                        alt={`${company.name} logo`}
+                        className="max-h-20 md:max-h-24 w-auto max-w-full object-contain"
+                      />
                     </div>
-                    <h3 className="text-xl md:text-2xl font-light text-white tracking-tight mb-2">{company.name}</h3>
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-[#C4A574]/90 mb-4 font-light">
-                      {company.industry}
-                    </p>
-                    <p className="text-sm text-white/60 font-light leading-relaxed flex-1">{company.description}</p>
-                    {company.website ? (
-                      <a
-                        href={company.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-6 text-xs uppercase tracking-[0.15em] text-[#C4A574] hover:text-[#D4B584] font-light"
-                      >
-                        Visit site →
-                      </a>
-                    ) : (
-                      <p className="mt-6 text-xs uppercase tracking-[0.15em] text-white/30 font-light">Private</p>
-                    )}
+                    <div className="p-6 md:p-8 flex flex-col flex-1 border-t border-white/[0.06]">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-gold mb-2 font-light">
+                        {company.industry}
+                      </p>
+                      <h3 className="font-serif text-2xl text-cream mb-3">{company.name}</h3>
+                      <p className="text-sm text-cream/60 font-light leading-relaxed flex-1">{company.description}</p>
+                      {company.website ? (
+                        <a
+                          href={company.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-6 text-[11px] uppercase tracking-[0.16em] text-gold hover:text-gold-light font-light"
+                        >
+                          Visit site →
+                        </a>
+                      ) : null}
+                    </div>
                   </article>
                 ))}
               </div>
@@ -358,48 +298,39 @@ function HomePageContent() {
           </div>
         </section>
 
-        <section
-          ref={(el) => {
-            sectionRefs.current[4] = el
-          }}
-          id="section-4"
-          className="relative min-h-screen scroll-mt-[5.5rem] bg-[#0a0a0a]"
-        >
-          <div className="flex flex-col pt-24 page-gutter-x pb-24 md:pb-28">
-            <div className="max-w-7xl w-full mx-auto py-8 md:py-12">
-              <div className="mb-8 md:mb-12 text-center">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extralight mb-4 tracking-tight">How We Execute</h2>
-                <p className="text-base md:text-lg text-white/50 font-light max-w-2xl mx-auto">
-                  Capabilities we bring inside a partnership—not a menu of standalone retainers.
-                </p>
-              </div>
-              <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-                {SERVICE_OFFERINGS.map((service) => (
+        <section ref={setSectionRef(4)} id="section-4" className="relative scroll-mt-[5.5rem] bg-ink">
+          <div className="page-gutter-x py-24 md:py-32">
+            <div className="max-w-6xl mx-auto">
+              <SectionIntro
+                kicker="04 — Capabilities"
+                title="How We Execute"
+                subtitle="Capabilities we bring inside a partnership—not a menu of standalone retainers."
+              />
+              <div className="grid md:grid-cols-2 gap-4 md:gap-5">
+                {SERVICE_OFFERINGS.map((service, idx) => (
                   <Link
                     key={service.id}
                     href={`/services/${service.id}`}
-                    className="group block bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 p-6 md:p-8 transition-all duration-300"
+                    className="group surface p-6 md:p-8 hover:border-gold/35 transition-colors duration-300"
                   >
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <h3 className="text-xl md:text-2xl font-light text-white tracking-tight">{service.title}</h3>
-                      <span className="text-[#C4A574] text-lg opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden>
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <span className="font-serif text-gold/80 text-sm">0{idx + 1}</span>
+                      <span className="text-gold text-sm opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden>
                         →
                       </span>
                     </div>
-                    <p className="text-white/60 font-light text-sm leading-relaxed">{service.shortDescription}</p>
+                    <h3 className="font-serif text-2xl text-cream mb-3 tracking-tight">{service.title}</h3>
+                    <p className="text-cream/60 font-light text-sm leading-relaxed">{service.shortDescription}</p>
                   </Link>
                 ))}
               </div>
 
-              <div className="mt-12 md:mt-16 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 border border-white/10 bg-white/[0.03] px-6 py-8 md:px-10 md:py-10 text-center sm:text-left">
-                <p className="text-sm md:text-base text-white/60 font-light max-w-xl leading-relaxed">
+              <div className="mt-12 md:mt-16 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-gold/25 bg-gold/[0.06] px-6 py-8 md:px-10 md:py-10">
+                <p className="text-sm md:text-base text-cream/70 font-light max-w-xl leading-relaxed">
                   Packages exist for founders who want a defined engagement. Most of our work is structured as a
                   partnership. If the fit is right, we design the deal around the company.
                 </p>
-                <Link
-                  href="/get-in-touch"
-                  className="shrink-0 px-8 py-3.5 bg-[#C4A574] hover:bg-[#B39564] text-[#0a0a0a] font-light text-xs uppercase tracking-[0.2em] transition-all duration-300"
-                >
+                <Link href="/get-in-touch" className="btn-gold shrink-0">
                   Start a conversation
                 </Link>
               </div>
@@ -407,33 +338,26 @@ function HomePageContent() {
           </div>
         </section>
 
-        <section
-          ref={(el) => {
-            sectionRefs.current[5] = el
-          }}
-          id="section-5"
-          className="relative min-h-[70vh] scroll-mt-[5.5rem] bg-[#0f0f0f] flex items-center"
-        >
-          <div className="w-full flex items-center justify-center py-24 md:py-32 page-gutter-x">
-            <div className="max-w-3xl text-center">
-              <h2 className="text-4xl sm:text-5xl md:text-6xl font-extralight mb-6 md:mb-8 tracking-tight">
+        <section ref={setSectionRef(5)} id="section-5" className="relative scroll-mt-[5.5rem] bg-forest">
+          <div className="page-gutter-x py-28 md:py-36">
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="kicker mb-5">Next step</p>
+              <h2 className="display text-4xl sm:text-5xl md:text-6xl leading-[1.12] mb-6">
                 Let&apos;s Build Something That Lasts.
               </h2>
-              <p className="text-lg md:text-xl text-white/70 mb-10 md:mb-12 leading-relaxed font-light">
+              <div className="h-px w-16 bg-gold mx-auto mb-8" />
+              <p className="text-lg md:text-xl text-cream/65 mb-10 leading-relaxed font-light">
                 If you are a founder or operator ready for a partner in the business—not a vendor on the outside—tell us
                 what you are building.
               </p>
-              <Link
-                href="/get-in-touch"
-                className="inline-block px-10 py-4 bg-[#C4A574] hover:bg-[#B39564] text-[#0a0a0a] font-light text-sm uppercase tracking-[0.2em] transition-all duration-300"
-              >
+              <Link href="/get-in-touch" className="btn-gold">
                 Work With Us
               </Link>
-              <div className="pt-8">
+              <div className="pt-10">
                 <button
                   type="button"
                   onClick={() => scrollToSection(0)}
-                  className="text-white/40 hover:text-white/60 transition-colors text-sm font-light tracking-wide"
+                  className="text-cream/35 hover:text-cream/60 transition-colors text-xs uppercase tracking-[0.18em] font-light"
                 >
                   Back to top
                 </button>
@@ -450,7 +374,7 @@ export default function Home() {
   return (
     <Suspense
       fallback={
-        <div className="h-screen bg-[#0a0a0a] text-white flex items-center justify-center font-light tracking-wide">
+        <div className="h-screen bg-ink text-cream flex items-center justify-center font-light tracking-wide">
           Loading…
         </div>
       }

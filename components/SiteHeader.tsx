@@ -7,8 +7,8 @@ import { getServicesNavLinks } from "@/data/services"
 import { HOME_SLIDE_LINKS } from "@/data/nav"
 
 const navClass = (active: boolean) =>
-  `text-xs font-light tracking-[0.15em] uppercase transition-all duration-300 relative group ${
-    active ? "text-[#C4A574]" : "text-white/60 hover:text-white"
+  `text-[11px] font-light tracking-[0.16em] uppercase transition-colors duration-300 relative group ${
+    active ? "text-gold" : "text-cream/55 hover:text-cream"
   }`
 
 type SiteHeaderProps = {
@@ -66,19 +66,19 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
     <header
       className={`${
         isHome ? "fixed top-0 left-0 right-0" : "sticky top-0"
-      } z-50 flex items-center justify-between page-gutter-x py-6 bg-[#0a0a0a]/95 backdrop-blur-2xl border-b border-white/5`}
+      } z-50 flex items-center justify-between page-gutter-x py-5 bg-ink/90 backdrop-blur-xl border-b border-white/[0.06]`}
     >
       {isHome && onNavigateSlide ? (
         <button type="button" onClick={goHome} className="flex items-center gap-2 text-left">
-          <span className="text-2xl md:text-3xl font-serif text-[#C4A574] font-normal leading-none">DW</span>
-          <span className="text-xs md:text-sm font-sans text-white/90 font-light tracking-[0.1em] uppercase hidden sm:block">
+          <span className="text-2xl md:text-[1.75rem] font-serif text-gold font-normal leading-none">DW</span>
+          <span className="text-[11px] md:text-xs font-sans text-cream/85 font-light tracking-[0.14em] uppercase hidden sm:block">
             GROWTH & CAPITAL
           </span>
         </button>
       ) : (
         <Link href="/" className="flex items-center gap-2" onClick={closeAll}>
-          <span className="text-2xl md:text-3xl font-serif text-[#C4A574] font-normal leading-none">DW</span>
-          <span className="text-xs md:text-sm font-sans text-white/90 font-light tracking-[0.1em] uppercase hidden sm:block">
+          <span className="text-2xl md:text-[1.75rem] font-serif text-gold font-normal leading-none">DW</span>
+          <span className="text-[11px] md:text-xs font-sans text-cream/85 font-light tracking-[0.14em] uppercase hidden sm:block">
             GROWTH & CAPITAL
           </span>
         </Link>
@@ -88,19 +88,19 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
         {isHome && onNavigateSlide ? (
           <button type="button" onClick={() => goSlide(0)} className={navClass(currentSlide === 0)}>
             Home
-            <span
-              className={`absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 ${
-                currentSlide === 0 ? "w-full" : "w-0 group-hover:w-full"
-              }`}
+              <span
+                className={`absolute -bottom-1 left-0 h-px bg-gold transition-all duration-300 ${
+                  currentSlide === 0 ? "w-full" : "w-0 group-hover:w-full"
+                }`}
             />
           </button>
         ) : (
           <Link href="/" className={navClass(pathname === "/")} onClick={closeAll}>
             Home
-            <span
-              className={`absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 ${
-                pathname === "/" ? "w-full" : "w-0 group-hover:w-full"
-              }`}
+              <span
+                className={`absolute -bottom-1 left-0 h-px bg-gold transition-all duration-300 ${
+                  pathname === "/" ? "w-full" : "w-0 group-hover:w-full"
+                }`}
             />
           </Link>
         )}
@@ -115,7 +115,7 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
             >
               {item.label}
               <span
-                className={`absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 ${
+                className={`absolute -bottom-1 left-0 h-px bg-gold transition-all duration-300 ${
                   currentSlide === item.slide ? "w-full" : "w-0 group-hover:w-full"
                 }`}
               />
@@ -128,7 +128,7 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
               onClick={closeAll}
             >
               {item.label}
-              <span className="absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 w-0 group-hover:w-full" />
+              <span className="absolute -bottom-1 left-0 h-px bg-gold transition-all duration-300 w-0 group-hover:w-full" />
             </Link>
           )
         )}
@@ -152,20 +152,20 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
             </svg>
             <span
-              className={`absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 ${
+              className={`absolute -bottom-1 left-0 h-px bg-gold transition-all duration-300 ${
                 servicesActive ? "w-full" : "w-0 group-hover:w-full"
               }`}
             />
           </button>
           {servicesMenuOpen && (
             <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-[60]" role="menu">
-              <div className="min-w-[18rem] py-2 bg-[#121212] border border-white/10 rounded-sm">
+              <div className="min-w-[18rem] py-2 bg-forest border border-white/10">
                 {serviceLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     role="menuitem"
-                    className="block px-4 py-2.5 text-left text-xs font-light tracking-wide text-white/80 hover:text-[#C4A574] hover:bg-white/5 transition-colors"
+                    className="block px-4 py-2.5 text-left text-xs font-light tracking-wide text-cream/80 hover:text-gold hover:bg-white/5 transition-colors"
                     onClick={() => setServicesMenuOpen(false)}
                   >
                     {link.label}
@@ -176,24 +176,15 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
           )}
         </div>
 
-        <Link
-          href="/get-in-touch"
-          className={navClass(pathname === "/get-in-touch")}
-          onClick={closeAll}
-        >
+        <Link href="/get-in-touch" className="btn-gold !px-5 !py-2.5 !text-[10px]" onClick={closeAll}>
           Contact
-          <span
-            className={`absolute -bottom-1 left-0 h-px bg-[#C4A574] transition-all duration-300 ${
-              pathname === "/get-in-touch" ? "w-full" : "w-0 group-hover:w-full"
-            }`}
-          />
         </Link>
       </nav>
 
       <button
         type="button"
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="lg:hidden text-white/60 hover:text-white transition-colors"
+        className="lg:hidden text-cream/55 hover:text-cream transition-colors"
         aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         aria-expanded={mobileMenuOpen}
       >
@@ -207,14 +198,14 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
       </button>
 
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden bg-[#0a0a0a]/98 backdrop-blur-2xl pt-24">
+        <div className="fixed inset-0 z-40 lg:hidden bg-ink/98 backdrop-blur-2xl pt-24">
           <nav className="flex flex-col gap-1 page-gutter-x overflow-y-auto max-h-[calc(100vh-6rem)] pb-12">
             {isHome && onNavigateSlide ? (
               <button
                 type="button"
                 onClick={() => goSlide(0)}
                 className={`text-left py-4 px-0 text-lg font-light tracking-wide border-b border-white/5 ${
-                  currentSlide === 0 ? "text-[#C4A574]" : "text-white/60"
+                  currentSlide === 0 ? "text-gold" : "text-cream/55"
                 }`}
               >
                 Home
@@ -222,7 +213,7 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
             ) : (
               <Link
                 href="/"
-                className="text-left py-4 px-0 text-lg font-light tracking-wide text-white/60 hover:text-white border-b border-white/5"
+                className="text-left py-4 px-0 text-lg font-light tracking-wide text-cream/55 hover:text-cream border-b border-white/5"
                 onClick={closeAll}
               >
                 Home
@@ -236,7 +227,7 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
                   type="button"
                   onClick={() => goSlide(item.slide)}
                   className={`text-left py-4 px-0 text-lg font-light tracking-wide border-b border-white/5 ${
-                    currentSlide === item.slide ? "text-[#C4A574]" : "text-white/60"
+                    currentSlide === item.slide ? "text-gold" : "text-cream/55"
                   }`}
                 >
                   {item.label}
@@ -245,7 +236,7 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
                 <Link
                   key={item.label}
                   href={`/?slide=${item.slide}`}
-                  className="text-left py-4 px-0 text-lg font-light tracking-wide text-white/60 hover:text-white border-b border-white/5"
+                  className="text-left py-4 px-0 text-lg font-light tracking-wide text-cream/55 hover:text-cream border-b border-white/5"
                   onClick={closeAll}
                 >
                   {item.label}
@@ -258,7 +249,7 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
                 type="button"
                 onClick={() => setMobileServicesOpen((o) => !o)}
                 className={`flex items-center justify-between w-full text-left py-4 px-0 text-lg font-light tracking-wide ${
-                  mobileServicesOpen || servicesActive ? "text-[#C4A574]" : "text-white/60"
+                  mobileServicesOpen || servicesActive ? "text-gold" : "text-cream/55"
                 }`}
                 aria-expanded={mobileServicesOpen}
               >
@@ -273,12 +264,12 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
                 </svg>
               </button>
               {mobileServicesOpen && (
-                <div className="pl-3 pb-4 space-y-2 border-l border-[#C4A574]/20 ml-1">
+                <div className="pl-3 pb-4 space-y-2 border-l border-gold/20 ml-1">
                   {serviceLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="block py-2 text-sm font-light text-white/70 hover:text-[#C4A574] pl-2 -ml-2"
+                      className="block py-2 text-sm font-light text-cream/70 hover:text-gold pl-2 -ml-2"
                       onClick={closeAll}
                     >
                       {link.label}
@@ -288,13 +279,7 @@ export function SiteHeader({ currentSlide = -1, onNavigateSlide }: SiteHeaderPro
               )}
             </div>
 
-            <Link
-              href="/get-in-touch"
-              className={`text-left py-4 px-0 text-lg font-light tracking-wide border-b border-white/5 ${
-                pathname === "/get-in-touch" ? "text-[#C4A574]" : "text-white/60 hover:text-white"
-              }`}
-              onClick={closeAll}
-            >
+            <Link href="/get-in-touch" className="btn-gold mt-6 w-full" onClick={closeAll}>
               Contact
             </Link>
           </nav>

@@ -27,36 +27,33 @@ export default async function ServiceDetailPage({ params }: Props) {
 
   return (
     <div className="pb-24">
-      <div className="page-gutter-x pt-8 md:pt-12">
+      <div className="page-gutter-x pt-12 md:pt-16">
         <div className="max-w-4xl mx-auto">
-          <nav className="text-xs font-light tracking-wide text-white/40 mb-8 md:mb-10">
-            <Link href="/services" className="hover:text-[#C4A574] transition-colors">
+          <nav className="text-[11px] font-light tracking-[0.14em] uppercase text-cream/40 mb-10">
+            <Link href="/services" className="hover:text-gold transition-colors">
               All capabilities
             </Link>
-            <span className="mx-2 text-white/20">/</span>
-            <span className="text-white/60">{service.title}</span>
+            <span className="mx-2 text-cream/20">/</span>
+            <span className="text-cream/60">{service.title}</span>
           </nav>
 
-          <header className="mb-8 md:mb-10 pb-8 border-b border-white/10">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extralight tracking-tight mb-4">{service.title}</h1>
-            <p className="text-lg md:text-xl text-white/70 font-light leading-relaxed">{service.shortDescription}</p>
+          <header className="mb-10 pb-8 border-b border-white/[0.08]">
+            <h1 className="display text-4xl md:text-5xl mb-4">{service.title}</h1>
+            <p className="text-lg md:text-xl text-cream/65 font-light leading-relaxed max-w-2xl">
+              {service.shortDescription}
+            </p>
           </header>
 
-          <div className="rounded-sm bg-white/5 border border-white/10">
-            <ServiceDetailsPanel service={service} />
-          </div>
+          <ServiceDetailsPanel service={service} />
 
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+          <div className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 text-[#C4A574] hover:text-[#D4B584] text-sm uppercase tracking-[0.15em] font-light transition-colors"
+              className="text-gold hover:text-gold-light text-[11px] uppercase tracking-[0.16em] font-light transition-colors"
             >
               ← All capabilities
             </Link>
-            <Link
-              href="/get-in-touch"
-              className="inline-flex items-center justify-center px-8 py-3.5 bg-[#C4A574] hover:bg-[#B39564] text-[#0a0a0a] text-xs font-light uppercase tracking-[0.15em] transition-colors"
-            >
+            <Link href="/get-in-touch" className="btn-gold">
               Discuss a partnership
             </Link>
           </div>

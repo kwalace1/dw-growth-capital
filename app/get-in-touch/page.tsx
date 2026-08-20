@@ -20,61 +20,60 @@ export default function GetInTouchPage() {
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`
   }
 
-  const labelClass = "block text-[10px] font-light uppercase tracking-[0.2em] text-white/50 mb-2"
+  const labelClass = "block text-[11px] font-light uppercase tracking-[0.2em] text-cream/45 mb-2"
   const fieldClass =
-    "w-full rounded-sm border border-white/10 bg-[#121212] px-4 py-3 text-sm font-light text-white placeholder:text-white/30 focus:border-[#C4A574]/50 focus:outline-none focus:ring-1 focus:ring-[#C4A574]/30 transition-colors"
+    "w-full border border-white/10 bg-ink px-4 py-3.5 text-sm font-light text-cream placeholder:text-cream/30 focus:border-gold/50 focus:outline-none transition-colors"
 
   return (
-    <div className="page-gutter-x pb-24 pt-8 md:pt-12">
+    <div className="page-gutter-x pb-24 pt-12 md:pt-16">
       <div className="max-w-3xl mx-auto">
-        <p className="text-center text-[10px] md:text-xs font-light uppercase tracking-[0.25em] text-[#C4A574]/90 mb-4">
-          Partnerships
-        </p>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extralight mb-4 md:mb-6 tracking-tight text-center">
-          Work with us
-        </h1>
-        <p className="text-base md:text-lg text-white/50 font-light max-w-2xl mx-auto text-center mb-10 md:mb-12 leading-relaxed">
+        <p className="kicker text-center mb-4">Partnerships</p>
+        <h1 className="display text-4xl md:text-5xl lg:text-6xl mb-5 text-center">Work with us</h1>
+        <div className="h-px w-16 bg-gold mx-auto mb-6" />
+        <p className="text-base md:text-lg text-cream/55 font-light max-w-2xl mx-auto text-center mb-12 leading-relaxed">
           Tell us about the company, the stage, and what you need an operator for. If there is a fit, we will follow up
           directly.
         </p>
 
-        <div className="border border-white/10 bg-white/[0.03] p-6 md:p-10 rounded-sm">
-          <form onSubmit={onSubmit} className="space-y-6 md:space-y-8">
-            <div>
-              <label htmlFor="git-name" className={labelClass}>
-                Name
-              </label>
-              <input
-                id="git-name"
-                name="name"
-                type="text"
-                required
-                autoComplete="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={fieldClass}
-                placeholder="Your name"
-              />
-            </div>
-            <div>
-              <label htmlFor="git-email" className={labelClass}>
-                Email
-              </label>
-              <input
-                id="git-email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={fieldClass}
-                placeholder="you@company.com"
-              />
+        <div className="surface p-6 md:p-10">
+          <form onSubmit={onSubmit} className="space-y-6">
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="git-name" className={labelClass}>
+                  Name
+                </label>
+                <input
+                  id="git-name"
+                  name="name"
+                  type="text"
+                  required
+                  autoComplete="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={fieldClass}
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label htmlFor="git-email" className={labelClass}>
+                  Email
+                </label>
+                <input
+                  id="git-email"
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={fieldClass}
+                  placeholder="you@company.com"
+                />
+              </div>
             </div>
             <div>
               <label htmlFor="git-company" className={labelClass}>
-                Company <span className="text-white/35 normal-case tracking-normal">(optional)</span>
+                Company <span className="text-cream/30 normal-case tracking-normal">(optional)</span>
               </label>
               <input
                 id="git-company"
@@ -103,16 +102,12 @@ export default function GetInTouchPage() {
               />
             </div>
             <div className="pt-2 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-              <button
-                type="submit"
-                className="group relative px-10 py-4 bg-[#C4A574] hover:bg-[#B39564] text-[#0a0a0a] font-light text-sm uppercase tracking-[0.2em] transition-all duration-300 overflow-hidden w-full sm:w-auto"
-              >
-                <span className="relative z-10">Send inquiry</span>
-                <span className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none" />
+              <button type="submit" className="btn-gold w-full sm:w-auto">
+                Send inquiry
               </button>
-              <p className="text-xs text-white/40 font-light text-center sm:text-right max-w-xs sm:max-w-none">
-                Opens your email app with this message addressed to{" "}
-                <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#C4A574] hover:text-[#D4B584] transition-colors">
+              <p className="text-xs text-cream/40 font-light text-center sm:text-right max-w-xs sm:max-w-none">
+                Opens your email app addressed to{" "}
+                <a href={`mailto:${CONTACT_EMAIL}`} className="text-gold hover:text-gold-light transition-colors">
                   {CONTACT_EMAIL}
                 </a>
                 .
@@ -121,13 +116,13 @@ export default function GetInTouchPage() {
           </form>
         </div>
 
-        <p className="mt-10 text-center text-sm text-white/45 font-light">
+        <p className="mt-10 text-center text-sm text-cream/45 font-light">
           Prefer the full story first?{" "}
-          <Link href="/services" className="text-[#C4A574] hover:text-[#D4B584] transition-colors">
+          <Link href="/services" className="text-gold hover:text-gold-light transition-colors">
             How we execute
           </Link>{" "}
           or{" "}
-          <Link href="/" className="text-[#C4A574] hover:text-[#D4B584] transition-colors">
+          <Link href="/" className="text-gold hover:text-gold-light transition-colors">
             return home
           </Link>
           .
